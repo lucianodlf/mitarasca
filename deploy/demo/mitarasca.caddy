@@ -1,0 +1,11 @@
+# Sitio de la demo para Caddy. Se instala como /etc/caddy/sites/mitarasca.caddy y el
+# /etc/caddy/Caddyfile del VPS lo incluye con `import sites/*.caddy` (así conviven otros
+# sitios del mismo VPS, p. ej. poliedrica, sin pisarse). Ver `make setup-caddy`.
+mitarasca.demo.lucianodlf.com.ar {
+	# Cloudflare Origin Certificate (requiere proxy naranja / nube naranja en el DNS):
+	# tls /etc/caddy/certs/mitarasca.demo.lucianodlf.com.ar.pem /etc/caddy/certs/mitarasca.demo.lucianodlf.com.ar.key
+
+	# La API (contenedor) sirve /trpc, /health y la SPA.
+	encode zstd gzip
+	reverse_proxy localhost:3787
+}

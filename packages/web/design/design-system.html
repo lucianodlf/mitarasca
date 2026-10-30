@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>finanzaspp · Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   TOKENS — compatibles con shadcn-vue (Tailwind v4 @theme / CSS vars)
+   Formato OKLCH (lo que genera shadcn-vue v4). Cada panel fija sus
+   propias variables vía .ds-light / .ds-dark para mostrarlos a la par.
+   ============================================================ */
+:root {
+  --radius: 0.5rem;
+  --font-sans: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, monospace;
+}
+
+/* ---------- LIGHT ---------- */
+.ds-light {
+  --background: oklch(0.99 0.003 250);
+  --foreground: oklch(0.21 0.04 265);          /* slate-900 azulado */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.04 265);
+  --muted: oklch(0.96 0.006 250);
+  --muted-foreground: oklch(0.45 0.03 257);    /* >= 4.5:1 sobre card */
+  --border: oklch(0.91 0.01 255);
+  --input: oklch(0.91 0.01 255);
+  --ring: oklch(0.55 0.18 264);
+  --primary: oklch(0.42 0.17 264);             /* #1E40AF aprox */
+  --primary-foreground: oklch(0.98 0.01 250);
+  --secondary: oklch(0.95 0.01 255);
+  --secondary-foreground: oklch(0.30 0.06 265);
+  --accent: oklch(0.97 0.04 85);               /* amber sutil de fondo */
+  --accent-foreground: oklch(0.42 0.13 70);
+  --cta: oklch(0.76 0.15 75);                  /* #F59E0B amber */
+  --cta-foreground: oklch(0.27 0.05 70);
+  --pos: oklch(0.52 0.14 155);                 /* ingreso / verde */
+  --pos-foreground: oklch(0.98 0.02 155);
+  --neg: oklch(0.55 0.20 25);                  /* egreso / rojo */
+  --neg-foreground: oklch(0.98 0.02 25);
+  --pos-soft: oklch(0.94 0.05 155);
+  --neg-soft: oklch(0.95 0.05 25);
+  --warn-soft: oklch(0.95 0.06 85);
+  color-scheme: light;
+}
+
+/* ---------- DARK (OLED, high contrast) ---------- */
+.ds-dark {
+  --background: oklch(0.16 0.015 265);
+  --foreground: oklch(0.95 0.01 250);
+  --card: oklch(0.20 0.02 265);
+  --card-foreground: oklch(0.95 0.01 250);
+  --muted: oklch(0.26 0.02 265);
+  --muted-foreground: oklch(0.70 0.02 257);
+  --border: oklch(0.30 0.02 265);
+  --input: oklch(0.30 0.02 265);
+  --ring: oklch(0.70 0.15 264);
+  --primary: oklch(0.62 0.17 264);             /* #3B82F6 más brillante en dark */
+  --primary-foreground: oklch(0.16 0.02 265);
+  --secondary: oklch(0.28 0.02 265);
+  --secondary-foreground: oklch(0.92 0.01 250);
+  --accent: oklch(0.30 0.05 85);
+  --accent-foreground: oklch(0.85 0.10 85);
+  --cta: oklch(0.78 0.15 75);
+  --cta-foreground: oklch(0.20 0.04 70);
+  --pos: oklch(0.72 0.16 158);
+  --pos-foreground: oklch(0.16 0.03 158);
+  --neg: oklch(0.68 0.19 25);
+  --neg-foreground: oklch(0.16 0.03 25);
+  --pos-soft: oklch(0.28 0.06 158);
+  --neg-soft: oklch(0.28 0.07 25);
+  --warn-soft: oklch(0.30 0.06 85);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: #0b1020;
+  color: #e5e7eb;
+  line-height: 1.5;
+}
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+
+/* page chrome */
+.page { max-width: 1400px; margin: 0 auto; padding: 28px 20px 64px; }
+.page h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 4px; color: #fff; }
+.page .sub { color: #94a3b8; font-size: 13px; margin: 0 0 24px; }
+.section-title { color: #cbd5e1; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin: 36px 0 12px; }
+
+/* dual panels */
+.dual { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 980px) { .dual { grid-template-columns: 1fr; } }
+.panel {
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.panel-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 8px 14px; color: var(--muted-foreground);
+  border-bottom: 1px solid var(--border); background: var(--muted);
+}
+
+/* ============ APP SHELL ============ */
+.shell { display: grid; grid-template-columns: 216px 1fr; min-height: 520px; }
+.shell.collapsed { grid-template-columns: 56px 1fr; }
+.sidebar { background: var(--card); border-right: 1px solid var(--border); padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+.brand { display: flex; align-items: center; gap: 9px; padding: 8px 8px 12px; }
+.brand .logo { width: 26px; height: 26px; border-radius: 7px; background: var(--primary); display: grid; place-items: center; flex: none; }
+.brand .logo svg { width: 15px; height: 15px; color: var(--primary-foreground); }
+.brand .name { font-weight: 700; font-size: 14px; letter-spacing: -0.01em; }
+.nav-group { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); padding: 12px 10px 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px;
+  font-size: 13px; color: var(--card-foreground); cursor: pointer; text-decoration: none;
+  transition: background-color .15s ease, color .15s ease;
+}
+.nav-item svg { width: 16px; height: 16px; flex: none; color: var(--muted-foreground); }
+.nav-item:hover { background: var(--muted); }
+.nav-item.active { background: color-mix(in oklch, var(--primary) 14%, transparent); color: var(--primary); }
+.nav-item.active svg { color: var(--primary); }
+.nav-item:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.collapsed .nav-item .label, .collapsed .brand .name, .collapsed .nav-group { display: none; }
+.collapsed .nav-item { justify-content: center; }
+
+/* header */
+.main { display: flex; flex-direction: column; min-width: 0; }
+.topbar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--background); }
+.icon-btn {
+  width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--card);
+  display: grid; place-items: center; cursor: pointer; color: var(--muted-foreground);
+  transition: background-color .15s ease, color .15s ease;
+}
+.icon-btn:hover { background: var(--muted); color: var(--foreground); }
+.icon-btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.icon-btn svg { width: 16px; height: 16px; }
+.searchbar {
+  flex: 1; max-width: 360px; display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border: 1px solid var(--input); border-radius: 8px; background: var(--card);
+  color: var(--muted-foreground); font-size: 13px; cursor: text;
+}
+.searchbar svg { width: 15px; height: 15px; }
+.kbd {
+  font-family: var(--font-mono); font-size: 11px; padding: 1px 6px; border-radius: 5px;
+  border: 1px solid var(--border); background: var(--muted); color: var(--muted-foreground);
+}
+.topbar .spacer { flex: 1; }
+.content { padding: 16px; overflow: auto; }
+
+/* ============ STAT CARDS ============ */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px; }
+.stat .k { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); display: flex; align-items: center; gap: 6px; }
+.stat .v { font-size: 22px; font-weight: 600; margin-top: 7px; letter-spacing: -0.01em; }
+.stat .d { font-size: 11px; margin-top: 3px; color: var(--muted-foreground); }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.v.pos { color: var(--pos); } .v.neg { color: var(--neg); }
+
+/* ============ TABLE ============ */
+.tablewrap { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--card); }
+.table-toolbar { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.table-toolbar .title { font-size: 13px; font-weight: 600; }
+.table-toolbar .spacer { flex: 1; }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead th {
+  text-align: left; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--muted-foreground); padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--muted);
+  white-space: nowrap;
+}
+thead th.r, tbody td.r { text-align: right; }
+tbody td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { transition: background-color .12s ease; }
+tbody tr:hover { background: var(--muted); }
+tbody tr:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+.amount.pos { color: var(--pos); font-weight: 600; }
+.amount.neg { color: var(--neg); font-weight: 600; }
+.cell-detail { display: flex; align-items: center; gap: 9px; }
+.dir { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; flex: none; }
+.dir svg { width: 13px; height: 13px; }
+.dir.in { background: var(--pos-soft); color: var(--pos); }
+.dir.out { background: var(--neg-soft); color: var(--neg); }
+
+/* ============ BADGES / TAGS ============ */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500;
+  padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); background: var(--muted); color: var(--muted-foreground);
+}
+.badge.pill-pos { background: var(--pos-soft); color: var(--pos); border-color: transparent; }
+.badge.pill-warn { background: var(--warn-soft); color: var(--cta-foreground); border-color: transparent; }
+.badge.pill-tag { background: color-mix(in oklch, var(--primary) 12%, transparent); color: var(--primary); border-color: transparent; }
+.tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* ============ CONTROLS GALLERY ============ */
+.gallery { background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+.row:last-child { margin-bottom: 0; }
+.row-label { width: 100%; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); margin-bottom: 2px; }
+.btn {
+  font-family: var(--font-sans); font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 8px;
+  border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+  transition: background-color .15s ease, opacity .15s ease, border-color .15s ease;
+}
+.btn svg { width: 15px; height: 15px; }
+.btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.btn-primary { background: var(--primary); color: var(--primary-foreground); }
+.btn-primary:hover { opacity: 0.9; }
+.btn-cta { background: var(--cta); color: var(--cta-foreground); }
+.btn-cta:hover { opacity: 0.9; }
+.btn-secondary { background: var(--secondary); color: var(--secondary-foreground); border-color: var(--border); }
+.btn-secondary:hover { background: var(--muted); }
+.btn-ghost { background: transparent; color: var(--foreground); }
+.btn-ghost:hover { background: var(--muted); }
+.btn-destructive { background: var(--neg); color: var(--neg-foreground); }
+.btn-destructive:hover { opacity: 0.9; }
+.input {
+  font-family: var(--font-sans); font-size: 13px; padding: 7px 11px; border-radius: 8px;
+  border: 1px solid var(--input); background: var(--card); color: var(--foreground); min-width: 180px;
+}
+.input::placeholder { color: var(--muted-foreground); }
+.input:focus { outline: 2px solid var(--ring); outline-offset: 0; border-color: var(--ring); }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--muted-foreground); }
+.select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: right 12px center, right 7px center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
+
+/* ============ TYPOGRAPHY SCALE ============ */
+.typo { background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: 14px; padding: 4px 18px; }
+.typo .t { display: flex; align-items: baseline; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+.typo .t:last-child { border-bottom: none; }
+.typo .meta { width: 150px; flex: none; font-size: 11px; color: var(--muted-foreground); font-family: var(--font-mono); }
+.t-display { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+.t-h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.t-h2 { font-size: 18px; font-weight: 600; }
+.t-body { font-size: 14px; }
+.t-sm { font-size: 12.5px; }
+.t-xs { font-size: 11px; color: var(--muted-foreground); }
+.t-num { font-size: 18px; font-weight: 600; }
+
+/* ============ SWATCHES ============ */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; padding: 14px; background: var(--background); border: 1px solid var(--border); border-radius: 14px; }
+.sw { border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+.sw .chip { height: 42px; }
+.sw .cap { padding: 6px 8px; font-size: 10.5px; font-family: var(--font-mono); color: var(--foreground); background: var(--card); }
+.sw .cap small { display: block; color: var(--muted-foreground); font-size: 9.5px; }
+
+/* ============ COMMAND PALETTE ============ */
+.palette-stage { position: relative; min-height: 320px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: var(--background); display: grid; place-items: start center; }
+.palette-stage .scrim { position: absolute; inset: 0; background: color-mix(in oklch, var(--foreground) 35%, transparent); backdrop-filter: blur(2px); }
+.cmdk { position: relative; margin-top: 42px; width: min(520px, 92%); background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 18px 50px -12px rgba(0,0,0,0.55); overflow: hidden; }
+.cmdk-input { display: flex; align-items: center; gap: 10px; padding: 13px 14px; border-bottom: 1px solid var(--border); }
+.cmdk-input svg { width: 17px; height: 17px; color: var(--muted-foreground); }
+.cmdk-input input { flex: 1; border: none; background: transparent; outline: none; color: var(--foreground); font-family: var(--font-sans); font-size: 14px; }
+.cmdk-group { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground); padding: 9px 14px 4px; }
+.cmdk-item { display: flex; align-items: center; gap: 10px; padding: 8px 14px; font-size: 13px; color: var(--card-foreground); cursor: pointer; }
+.cmdk-item svg { width: 15px; height: 15px; color: var(--muted-foreground); }
+.cmdk-item .spacer { flex: 1; }
+.cmdk-item.sel { background: color-mix(in oklch, var(--primary) 14%, transparent); }
+.cmdk-item.sel svg { color: var(--primary); }
+.cmdk-foot { display: flex; align-items: center; gap: 14px; padding: 8px 14px; border-top: 1px solid var(--border); font-size: 11px; color: var(--muted-foreground); }
+.cmdk-foot .k { display: inline-flex; align-items: center; gap: 4px; }
+
+.note { font-size: 12px; color: #94a3b8; margin: 8px 2px 0; max-width: 70ch; }
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>finanzaspp · Design System</h1>
+  <p class="sub">Boceto de aprobación · Vue 3 + Tailwind v4 + shadcn-vue · tokens OKLCH (light / dark) · estética dashboard financiero denso</p>
+
+  <!-- ============ APP SHELL ============ -->
+  <div class="section-title">App shell · sidebar colapsable + header</div>
+  <div class="dual">
+    <!-- LIGHT shell -->
+    <div class="panel ds-light">
+      <div class="panel-label">Light · sidebar expandido</div>
+      <div class="shell">
+        <aside class="sidebar">
+          <div class="brand">
+            <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 2 4-6"/></svg></span>
+            <span class="name">finanzaspp</span>
+          </div>
+          <div class="nav-group">Finanzas</div>
+          <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 10l7-7 7 7"/></svg><span class="label">Egresos</span></a>
+          <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V3"/><path d="M19 14l-7 7-7-7"/></svg><span class="label">Ingresos</span></a>
+          <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span class="label">Balance</span></a>
+          <div class="nav-group">Cartera</div>
+          <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span class="label">Deudas</span></a>
+          <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span class="label">Personas</span></a>
+        </aside>
+        <div class="main">
+          <div class="topbar">
+            <button class="icon-btn" aria-label="Colapsar menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+            <div class="searchbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar… <span class="spacer"></span><span class="kbd">⌘K</span></div>
+            <span class="spacer"></span>
+            <button class="icon-btn" aria-label="Modo claro/oscuro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19"/></svg></button>
+          </div>
+          <div class="content">
+            <div class="stats">
+              <div class="stat"><div class="k"><span class="dot" style="background:var(--pos)"></span>Ingresos</div><div class="v pos num">$ 842.500</div><div class="d">junio 2026 · proyectado</div></div>
+              <div class="stat"><div class="k"><span class="dot" style="background:var(--neg)"></span>Egresos</div><div class="v neg num">$ 613.180</div><div class="d">junio 2026 · proyectado</div></div>
+              <div class="stat"><div class="k"><span class="dot" style="background:var(--primary)"></span>Balance</div><div class="v num">$ 229.320</div><div class="d">+12,4% vs mayo</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DARK shell collapsed -->
+    <div class="panel ds-dark">
+      <div class="panel-label">Dark · sidebar colapsado</div>
+      <div class="shell collapsed">
+        <aside class="sidebar">
+          <div class="brand"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 2 4-6"/></svg></span></div>
+          <a class="nav-item active" href="#" title="Egresos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 10l7-7 7 7"/></svg></a>
+          <a class="nav-item" href="#" title="Ingresos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V3"/><path d="M19 14l-7 7-7-7"/></svg></a>
+          <a class="nav-item" href="#" title="Balance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></a>
+          <a class="nav-item" href="#" title="Deudas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></a>
+          <a class="nav-item" href="#" title="Personas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></a>
+        </aside>
+        <div class="main">
+          <div class="topbar">
+            <button class="icon-btn" aria-label="Expandir menú"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+            <div class="searchbar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>Buscar… <span class="spacer"></span><span class="kbd">⌘K</span></div>
+            <span class="spacer"></span>
+            <button class="icon-btn" aria-label="Modo claro/oscuro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg></button>
+          </div>
+          <div class="content">
+            <div class="stats">
+              <div class="stat"><div class="k"><span class="dot" style="background:var(--pos)"></span>Ingresos</div><div class="v pos num">$ 842.500</div><div class="d">junio 2026 · proyectado</div></div>
+              <div class="stat"><div class="k"><span class="dot" style="background:var(--neg)"></span>Egresos</div><div class="v neg num">$ 613.180</div><div class="d">junio 2026 · proyectado</div></div>
+              <div class="stat"><div class="k"><span class="dot" style="background:var(--primary)"></span>Balance</div><div class="v num">$ 229.320</div><div class="d">+12,4% vs mayo</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DATA TABLE ============ -->
+  <div class="section-title">Tabla densa de movimientos · Egresos/Ingresos</div>
+  <div class="dual">
+    <div class="panel ds-light"><div class="panel-label">Light</div><div style="padding:14px">
+      <div class="tablewrap">
+        <div class="table-toolbar">
+          <span class="title">Movimientos · Junio 2026</span>
+          <span class="spacer"></span>
+          <span class="badge pill-tag">14 ítems</span>
+        </div>
+        <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Detalle</th><th>Fecha</th><th>Concepto</th><th>Estado</th><th class="r">Monto</th></tr></thead>
+          <tbody>
+            <tr tabindex="0">
+              <td><div class="cell-detail"><span class="dir out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg></span>Alquiler</div></td>
+              <td class="num">05/06</td><td><div class="tags"><span class="badge pill-tag">Fijo</span></div></td>
+              <td><span class="badge pill-pos">Pagado</span></td><td class="r amount neg num">−$ 310.000</td>
+            </tr>
+            <tr tabindex="0">
+              <td><div class="cell-detail"><span class="dir in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></span>Factura cliente ACME</div></td>
+              <td class="num">03/06</td><td><div class="tags"><span class="badge pill-tag">Honorarios</span></div></td>
+              <td><span class="badge pill-pos">Pagado</span></td><td class="r amount pos num">+$ 540.000</td>
+            </tr>
+            <tr tabindex="0">
+              <td><div class="cell-detail"><span class="dir out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg></span>Súper</div></td>
+              <td class="num">08/06</td><td><div class="tags"><span class="badge pill-tag">Variable</span><span class="badge pill-tag">÷2</span></div></td>
+              <td><span class="badge pill-warn">Adeudado</span></td><td class="r amount neg num">−$ 42.300</td>
+            </tr>
+            <tr tabindex="0">
+              <td><div class="cell-detail"><span class="dir out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg></span>Monot + Impuestos</div></td>
+              <td class="num">10/06</td><td><div class="tags"><span class="badge pill-tag">Fijo</span></div></td>
+              <td><span class="badge pill-warn">Adeudado</span></td><td class="r amount neg num">−$ 38.450</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="panel ds-dark"><div class="panel-label">Dark</div><div style="padding:14px">
+      <div class="tablewrap">
+        <div class="table-toolbar">
+          <span class="title">Movimientos · Junio 2026</span>
+          <span class="spacer"></span>
+          <span class="badge pill-tag">14 ítems</span>
+        </div>
+        <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Detalle</th><th>Fecha</th><th>Concepto</th><th>Estado</th><th class="r">Monto</th></tr></thead>
+          <tbody>
+            <tr tabindex="0" class="" style="background:color-mix(in oklch, var(--primary) 10%, transparent)">
+              <td><div class="cell-detail"><span class="dir out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg></span>Alquiler</div></td>
+              <td class="num">05/06</td><td><div class="tags"><span class="badge pill-tag">Fijo</span></div></td>
+              <td><span class="badge pill-pos">Pagado</span></td><td class="r amount neg num">−$ 310.000</td>
+            </tr>
+            <tr tabindex="0">
+              <td><div class="cell-detail"><span class="dir in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></span>Factura cliente ACME</div></td>
+              <td class="num">03/06</td><td><div class="tags"><span class="badge pill-tag">Honorarios</span></div></td>
+              <td><span class="badge pill-pos">Pagado</span></td><td class="r amount pos num">+$ 540.000</td>
+            </tr>
+            <tr tabindex="0">
+              <td><div class="cell-detail"><span class="dir out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg></span>Súper</div></td>
+              <td class="num">08/06</td><td><div class="tags"><span class="badge pill-tag">Variable</span><span class="badge pill-tag">÷2</span></div></td>
+              <td><span class="badge pill-warn">Adeudado</span></td><td class="r amount neg num">−$ 42.300</td>
+            </tr>
+            <tr tabindex="0">
+              <td><div class="cell-detail"><span class="dir out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14"/><path d="m5 12 7 7 7-7"/></svg></span>Monot + Impuestos</div></td>
+              <td class="num">10/06</td><td><div class="tags"><span class="badge pill-tag">Fijo</span></div></td>
+              <td><span class="badge pill-warn">Adeudado</span></td><td class="r amount neg num">−$ 38.450</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div></div>
+  </div>
+  <p class="note">Números en Fira Code con <code>tabular-nums</code>: las columnas de monto alinean dígitos verticalmente. Dirección como icono + color (no solo color → accesible). Fila enfocada con ring visible (Tab navega filas).</p>
+
+  <!-- ============ CONTROLS ============ -->
+  <div class="section-title">Controles · botones, inputs, badges</div>
+  <div class="dual">
+    <div class="panel ds-light"><div class="panel-label">Light</div><div style="padding:14px">
+      <div class="gallery">
+        <div class="row"><span class="row-label">Botones</span>
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Nuevo egreso</button>
+          <button class="btn btn-cta">Generar mes</button>
+          <button class="btn btn-secondary">Filtrar</button>
+          <button class="btn btn-ghost">Cancelar</button>
+          <button class="btn btn-destructive">Eliminar</button>
+        </div>
+        <div class="row"><span class="row-label">Inputs</span>
+          <div class="field"><label for="d1">Detalle</label><input id="d1" class="input" placeholder="Alquiler departamento" /></div>
+          <div class="field"><label for="m1">Monto</label><input id="m1" class="input num" placeholder="0,00" /></div>
+          <div class="field"><label for="s1">Estado</label><select id="s1" class="input select"><option>Adeudado</option><option>Pagado</option></select></div>
+        </div>
+        <div class="row"><span class="row-label">Badges / tags</span>
+          <span class="badge pill-pos">Pagado</span><span class="badge pill-warn">Adeudado</span>
+          <span class="badge pill-tag">Fijo</span><span class="badge pill-tag">Variable</span><span class="badge pill-tag">÷2</span>
+          <span class="badge">Sin estado</span>
+        </div>
+      </div>
+    </div></div>
+    <div class="panel ds-dark"><div class="panel-label">Dark</div><div style="padding:14px">
+      <div class="gallery">
+        <div class="row"><span class="row-label">Botones</span>
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Nuevo egreso</button>
+          <button class="btn btn-cta">Generar mes</button>
+          <button class="btn btn-secondary">Filtrar</button>
+          <button class="btn btn-ghost">Cancelar</button>
+          <button class="btn btn-destructive">Eliminar</button>
+        </div>
+        <div class="row"><span class="row-label">Inputs</span>
+          <div class="field"><label for="d2">Detalle</label><input id="d2" class="input" placeholder="Alquiler departamento" /></div>
+          <div class="field"><label for="m2">Monto</label><input id="m2" class="input num" placeholder="0,00" /></div>
+          <div class="field"><label for="s2">Estado</label><select id="s2" class="input select"><option>Adeudado</option><option>Pagado</option></select></div>
+        </div>
+        <div class="row"><span class="row-label">Badges / tags</span>
+          <span class="badge pill-pos">Pagado</span><span class="badge pill-warn">Adeudado</span>
+          <span class="badge pill-tag">Fijo</span><span class="badge pill-tag">Variable</span><span class="badge pill-tag">÷2</span>
+          <span class="badge">Sin estado</span>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ============ TYPOGRAPHY ============ -->
+  <div class="section-title">Escala tipográfica · Fira Sans (UI) + Fira Code (números)</div>
+  <div class="dual">
+    <div class="panel ds-light"><div class="panel-label">Light</div><div style="padding:14px">
+      <div class="typo">
+        <div class="t"><span class="meta">Display · 28/700</span><span class="t-display">Balance anual</span></div>
+        <div class="t"><span class="meta">H1 · 22/700</span><span class="t-h1">Egresos de junio</span></div>
+        <div class="t"><span class="meta">H2 · 18/600</span><span class="t-h2">Resumen mensual</span></div>
+        <div class="t"><span class="meta">Body · 14/400</span><span class="t-body">Detalle del movimiento y observaciones.</span></div>
+        <div class="t"><span class="meta">Small · 12.5/400</span><span class="t-sm">Etiquetas, ayudas de campo, metadatos.</span></div>
+        <div class="t"><span class="meta">XS muted · 11</span><span class="t-xs">junio 2026 · proyectado</span></div>
+        <div class="t"><span class="meta">Número · mono tnum</span><span class="t-num num">$ 1.234.567,89</span></div>
+      </div>
+    </div></div>
+    <div class="panel ds-dark"><div class="panel-label">Dark</div><div style="padding:14px">
+      <div class="typo">
+        <div class="t"><span class="meta">Display · 28/700</span><span class="t-display">Balance anual</span></div>
+        <div class="t"><span class="meta">H1 · 22/700</span><span class="t-h1">Egresos de junio</span></div>
+        <div class="t"><span class="meta">H2 · 18/600</span><span class="t-h2">Resumen mensual</span></div>
+        <div class="t"><span class="meta">Body · 14/400</span><span class="t-body">Detalle del movimiento y observaciones.</span></div>
+        <div class="t"><span class="meta">Small · 12.5/400</span><span class="t-sm">Etiquetas, ayudas de campo, metadatos.</span></div>
+        <div class="t"><span class="meta">XS muted · 11</span><span class="t-xs">junio 2026 · proyectado</span></div>
+        <div class="t"><span class="meta">Número · mono tnum</span><span class="t-num num">$ 1.234.567,89</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ============ SWATCHES ============ -->
+  <div class="section-title">Paleta · tokens semánticos shadcn-vue</div>
+  <div class="dual">
+    <div class="panel ds-light"><div class="panel-label">Light</div><div style="padding:14px">
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:var(--primary)"></div><div class="cap">primary<small>azul datos</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--cta)"></div><div class="cap">cta<small>amber acción</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--pos)"></div><div class="cap">pos<small>ingreso</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--neg)"></div><div class="cap">neg<small>egreso</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--muted)"></div><div class="cap">muted<small>fondos</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--border)"></div><div class="cap">border</div></div>
+        <div class="sw"><div class="chip" style="background:var(--foreground)"></div><div class="cap">foreground</div></div>
+        <div class="sw"><div class="chip" style="background:var(--ring)"></div><div class="cap">ring<small>foco</small></div></div>
+      </div>
+    </div></div>
+    <div class="panel ds-dark"><div class="panel-label">Dark</div><div style="padding:14px">
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:var(--primary)"></div><div class="cap">primary<small>azul datos</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--cta)"></div><div class="cap">cta<small>amber acción</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--pos)"></div><div class="cap">pos<small>ingreso</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--neg)"></div><div class="cap">neg<small>egreso</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--muted)"></div><div class="cap">muted<small>fondos</small></div></div>
+        <div class="sw"><div class="chip" style="background:var(--border)"></div><div class="cap">border</div></div>
+        <div class="sw"><div class="chip" style="background:var(--foreground)"></div><div class="cap">foreground</div></div>
+        <div class="sw"><div class="chip" style="background:var(--ring)"></div><div class="cap">ring<small>foco</small></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ============ COMMAND PALETTE ============ -->
+  <div class="section-title">Command palette · ⌘K / Ctrl+K</div>
+  <div class="dual">
+    <div class="panel ds-light"><div class="panel-label">Light</div><div style="padding:0">
+      <div class="palette-stage">
+        <div class="scrim"></div>
+        <div class="cmdk">
+          <div class="cmdk-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input placeholder="Buscar acción o ir a…" value="" /></div>
+          <div class="cmdk-group">Navegar</div>
+          <div class="cmdk-item sel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18"/><path d="M5 10l7-7 7 7"/></svg>Ir a Egresos<span class="spacer"></span><span class="kbd">G E</span></div>
+          <div class="cmdk-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V3"/><path d="M19 14l-7 7-7-7"/></svg>Ir a Ingresos<span class="spacer"></span><span class="kbd">G I</span></div>
+          <div class="cmdk-group">Acciones</div>
+          <div class="cmdk-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Nuevo egreso<span class="spacer"></span><span class="kbd">N</span></div>
+          <div class="cmdk-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Generar mes desde plantilla</div>
+          <div class="cmdk-foot"><span class="k"><span class="kbd">↑↓</span> navegar</span><span class="k"><span class="kbd">↵</span> abrir</span><span class="k"><span class="kbd">esc</span> cerrar</span></div>
+        </div>
+      </div>
+    </div></div>
+    <div class="panel ds-dark"><div class="panel-label">Dark</div><div style="padding:0">
+      <div class="palette-stage">
+        <div class="scrim"></div>
+        <div class="cmdk">
+          <div class="cmdk-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input placeholder="Buscar acción o ir a…" value="deud" /></div>
+          <div class="cmdk-group">Navegar</div>
+          <div class="cmdk-item sel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Ir a Deudas<span class="spacer"></span><span class="kbd">G D</span></div>
+          <div class="cmdk-group">Acciones</div>
+          <div class="cmdk-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Nueva deuda en cuotas</div>
+          <div class="cmdk-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>Marcar cuota pagada</div>
+          <div class="cmdk-foot"><span class="k"><span class="kbd">↑↓</span> navegar</span><span class="k"><span class="kbd">↵</span> abrir</span><span class="k"><span class="kbd">esc</span> cerrar</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <p class="note" style="margin-top:28px">Tokens nombrados a la convención shadcn-vue (<code>--primary / --primary-foreground</code>, <code>:root</code> + <code>.dark</code>). En implementación real van en <code>src/assets/index.css</code> bajo <code>@theme inline</code> (Tailwind v4). <code>--pos/--neg/--cta</code> son extensiones del proyecto para semántica financiera. Iconos: trazos estilo Lucide (los reales vendrán de <code>lucide-vue-next</code>). Sin emojis. Contraste objetivo WCAG AA.</p>
+</div>
+</body>
+</html>

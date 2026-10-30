@@ -1,0 +1,110 @@
+[
+  {
+    "fecha": "2026-10-23",
+    "direccion": "out",
+    "monto_total": 9800,
+    "detalle": "Cine Demo",
+    "source_image_hash": "1316aa6d29b3365b94c73ddd304a22e8a8e341f0ca8a418c5c6f4c20c88b0bbd",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado",
+      "concepto": "Gustos/Salidas"
+    }
+  },
+  {
+    "fecha": "2026-10-23",
+    "direccion": "out",
+    "monto_total": 3900,
+    "detalle": "Café Ejemplo",
+    "source_image_hash": "1316aa6d29b3365b94c73ddd304a22e8a8e341f0ca8a418c5c6f4c20c88b0bbd",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado",
+      "concepto": "Comida/Bebida"
+    }
+  },
+  {
+    "fecha": "2026-10-23",
+    "direccion": "out",
+    "monto_total": 3900,
+    "detalle": "Café Ejemplo",
+    "source_image_hash": "1316aa6d29b3365b94c73ddd304a22e8a8e341f0ca8a418c5c6f4c20c88b0bbd",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado",
+      "concepto": "Comida/Bebida"
+    }
+  },
+  {
+    "fecha": "2026-10-24",
+    "direccion": "out",
+    "monto_total": 14750,
+    "detalle": "Empresa de Gas Ficticia",
+    "source_image_hash": "1316aa6d29b3365b94c73ddd304a22e8a8e341f0ca8a418c5c6f4c20c88b0bbd",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado",
+      "concepto": "Gas"
+    }
+  },
+  {
+    "fecha": "2026-10-25",
+    "direccion": "out",
+    "monto_total": 3900,
+    "detalle": "Café Ejemplo",
+    "source_image_hash": "96aaed238889e7ec04e40ffcd24b89f8db20aa8c5ac2f03bbeba4da8f6235271",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado",
+      "concepto": "Comida/Bebida"
+    }
+  },
+  {
+    "fecha": "2026-10-26",
+    "direccion": "out",
+    "monto_total": 6200,
+    "detalle": "Farmacia Central",
+    "source_image_hash": "96aaed238889e7ec04e40ffcd24b89f8db20aa8c5ac2f03bbeba4da8f6235271",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado",
+      "concepto": "Hogar/Autocuidado"
+    }
+  },
+  {
+    "fecha": "2026-10-26",
+    "direccion": "in",
+    "monto_total": 25000,
+    "detalle": "Transferencia recibida",
+    "observacion": "De Juan Pérez",
+    "source_image_hash": "96aaed238889e7ec04e40ffcd24b89f8db20aa8c5ac2f03bbeba4da8f6235271",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado"
+    }
+  },
+  {
+    "fecha": "2026-10-27",
+    "direccion": "out",
+    "monto_total": 18430.5,
+    "detalle": "Supermercado El Trébol",
+    "source_image_hash": "96aaed238889e7ec04e40ffcd24b89f8db20aa8c5ac2f03bbeba4da8f6235271",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado",
+      "concepto": "Super"
+    }
+  },
+  {
+    "fecha": "2026-10-27",
+    "direccion": "in",
+    "monto_total": 1236.27,
+    "detalle": "Rendimientos",
+    "source_image_hash": "96aaed238889e7ec04e40ffcd24b89f8db20aa8c5ac2f03bbeba4da8f6235271",
+    "tags": {
+      "tipo": "Variable",
+      "estado": "Pagado",
+      "concepto": "Intereses"
+    }
+  }
+]

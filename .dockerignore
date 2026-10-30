@@ -1,0 +1,25 @@
+# Nada de datos, credenciales ni material de trabajo en el contexto de build.
+.git
+.env*
+!.env.example
+data
+*.db
+*.db-*
+**/node_modules
+**/dist
+dist-release
+.agents
+.claude
+.serena
+.gitnexus
+.impeccable
+.playwright-mcp
+.worktrees
+.vscode
+.idea
+.mitarasca
+graphify-out
+docs
+deploy
+*.png
+!packages/web/**/*.png

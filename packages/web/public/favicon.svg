@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="mitarascaFaviconGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="oklch(72% 0.11 155)" />
+      <stop offset="100%" stop-color="oklch(76% 0.09 195)" />
+    </linearGradient>
+  </defs>
+  <path
+    d="M30,60 C30,40 50,40 60,60 C70,80 90,80 90,60 C90,40 70,40 60,60 C50,80 30,80 30,60 Z"
+    fill="url(#mitarascaFaviconGrad)"
+    stroke="oklch(55% 0.09 195)"
+    stroke-width="3"
+  />
+</svg>

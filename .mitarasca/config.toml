@@ -1,0 +1,8 @@
+db_path = "./data/mitarasca.db"
+# db_path = "./data/demo.db"
+
+[paths]
+inbox = "./data/inbox"
+imports = "./data/imports"
+processed = "./data/processed"
+backups = "./data/backups"

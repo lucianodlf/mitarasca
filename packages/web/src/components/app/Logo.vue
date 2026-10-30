@@ -1,0 +1,36 @@
+<script setup lang="ts">
+import { useId } from "vue";
+
+withDefaults(defineProps<{ size?: number }>(), { size: 24 });
+
+const gradId = `mitarasca-logo-grad-${useId()}`;
+</script>
+
+<template>
+  <svg :width="size" :height="size" viewBox="0 0 120 120">
+    <defs>
+      <linearGradient :id="gradId" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="oklch(72% 0.11 155)" />
+        <stop offset="100%" stop-color="oklch(76% 0.09 195)" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M30,60 C30,40 50,40 60,60 C70,80 90,80 90,60 C90,40 70,40 60,60 C50,80 30,80 30,60 Z"
+      :fill="`url(#${gradId})`"
+      stroke="oklch(55% 0.09 195)"
+      stroke-width="2"
+    />
+    <rect
+      x="52"
+      y="24"
+      width="16"
+      height="16"
+      rx="3"
+      fill="oklch(72% 0.10 300)"
+      stroke="oklch(54% 0.10 300)"
+      stroke-width="1.5"
+      transform="rotate(45 60 32)"
+    />
+    <circle cx="60" cy="32" r="3" fill="oklch(90% 0.035 205)" />
+  </svg>
+</template>

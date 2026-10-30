@@ -1,0 +1,51 @@
+# Worktrees
+.worktrees/
+
+# Dependencias
+node_modules/
+
+# Builds
+dist/
+dist-release/
+
+# Env — ignorar todo excepto el ejemplo y el de demo
+.env*
+!.env.example
+.env.demo
+
+# Archivos locales de cualquier tipo
+*.local
+
+# Base de datos
+*.db
+*.db-shm
+*.db-wal
+data/*
+!data/.gitkeep
+
+# Caché de Vite
+**/.vite/
+
+CLAUDE.local.md
+
+# Claude Code — skills y settings del agente (no son del proyecto)
+.claude/skills/*
+!.claude/skills/importar-movimientos/
+!.claude/skills/importar-movimientos/**
+.claude/settings.local.json
+.claude/agents/
+.claude/commands/
+.claude/hooks/
+.claude/settings.json
+
+# OS
+.DS_Store
+uiuix-template-project/
+.playwright-mcp/
+
+graphify-out/
+
+.agents/working-progress/desing-system-source/mitarasca-design-system/project/uploads/
+.superpowers/
+.agents/working-progress/_scratch/
+data-docker/

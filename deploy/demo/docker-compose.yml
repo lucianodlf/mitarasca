@@ -1,0 +1,15 @@
+# Compose de la demo en el VPS. Vive en $DEMO_DIR (/srv/example-demo) junto a:
+#   .env   -> IMAGE_TAG (lo actualiza el job deploy_demo) y variables de la app
+#   data/  -> demo.db (owner uid 1000 = usuario "bun" de la imagen)
+# El pipeline copia este archivo en cada deploy; no editarlo a mano en el VPS.
+services:
+  api:
+    image: registry.example.com/example/mitarasca:${IMAGE_TAG:?falta IMAGE_TAG en .env}
+    env_file: .env
+    environment:
+      DB_PATH: /app/data/demo.db
+    ports:
+      - "127.0.0.1:3787:3787"   # solo loopback: entra por Caddy
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

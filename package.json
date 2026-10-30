@@ -1,0 +1,24 @@
+{
+  "name": "mitarasca",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev": "bun run --filter '@mitarasca/api' --filter '@mitarasca/web' --elide-lines 0 dev",
+    "dev:web": "bun run --cwd packages/web dev",
+    "dev:api": "bun run --cwd packages/api dev",
+    "dev:demo": "DB_PATH=$PWD/data/demo.db bun run dev",
+    "typecheck": "bun run --filter '*' typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "db:generate": "bun run --cwd packages/core db:generate",
+    "db:migrate": "bun run --cwd packages/core db:migrate",
+    "db:init": "bun packages/core/scripts/init-db.ts",
+    "db:seed:demo": "bun packages/core/scripts/seed-demo.ts",
+    "release:build": "bun run scripts/build-release.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^25.9.3",
+    "typescript": "^5.7.3"
+  }
+}

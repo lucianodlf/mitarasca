@@ -1,0 +1,14 @@
+# Build y prueba local de la imagen de la demo (la del VPS está en deploy/demo/docker-compose.yml).
+#   docker compose run --rm api bun run packages/core/scripts/seed-demo.ts /app/data/demo.db
+#   docker compose up --build
+# Monta data-docker/ (no data/) para no tocar nunca la DB real.
+services:
+  api:
+    build:
+      context: .
+    environment:
+      DB_PATH: /app/data/demo.db
+    ports:
+      - "127.0.0.1:3787:3787"
+    volumes:
+      - ./data-docker:/app/data

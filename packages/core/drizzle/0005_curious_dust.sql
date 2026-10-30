@@ -1,0 +1,1 @@
+ALTER TABLE `tags` ADD `alcance` text DEFAULT 'general' NOT NULL;
