@@ -1,5 +1,6 @@
 import {
   type DbClient,
+  assertDbExists,
   buildFinancialReport,
   createDebt,
   createMovement,
@@ -33,6 +34,13 @@ import { z } from "zod";
 import { currentYearMonth, monthRange } from "./lib/dates.js";
 import { resolveTagsForCreate, resolveTagsForUpdate } from "./lib/tags.js";
 import type { TagsCreateInput, TagsUpdateInput } from "./lib/tags.js";
+
+// El MCP no crea la DB: avisa por stderr (stdout es JSON-RPC) y las tools devuelven el error.
+try {
+  assertDbExists();
+} catch (err) {
+  console.error(`[mitarasca] ${(err as Error).message}`);
+}
 
 const server = new McpServer({
   name: "mitarasca",

@@ -134,20 +134,20 @@ async function onSubmit() {
       </DialogHeader>
 
       <form class="grid gap-3" @submit.prevent="onSubmit">
-        <div v-for="(row, i) in rows" :key="i" class="grid grid-cols-[1fr_auto_auto_auto] items-end gap-2">
-          <div class="grid gap-1.5">
-            <Label>Persona/Entidad</Label>
+        <div v-for="(row, i) in rows" :key="i" class="grid grid-cols-[1fr_1fr_auto] items-end gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
+          <div class="col-span-3 grid gap-1.5 sm:col-span-1">
+            <Label :for="`sd-persona-${i}`">Persona/Entidad</Label>
             <Select v-model="row.personaId">
-              <SelectTrigger class="w-full"><SelectValue placeholder="Persona" /></SelectTrigger>
+              <SelectTrigger :id="`sd-persona-${i}`" class="w-full"><SelectValue placeholder="Persona" /></SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="p in personas" :key="p.id" :value="String(p.id)">{{ p.nombre }}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div class="grid gap-1.5">
-            <Label>Modo</Label>
+            <Label :for="`sd-modo-${i}`">Modo</Label>
             <Select v-model="row.modo">
-              <SelectTrigger class="w-[110px]"><SelectValue /></SelectTrigger>
+              <SelectTrigger :id="`sd-modo-${i}`" class="w-full sm:w-[110px]"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="importe">Importe</SelectItem>
                 <SelectItem value="porcentaje">%</SelectItem>
@@ -155,10 +155,10 @@ async function onSubmit() {
             </Select>
           </div>
           <div class="grid gap-1.5">
-            <Label>Valor</Label>
-            <Input v-model.number="row.valor" type="number" min="0" step="0.01" class="num w-[100px]" />
+            <Label :for="`sd-valor-${i}`">Valor</Label>
+            <Input :id="`sd-valor-${i}`" v-model.number="row.valor" type="number" min="0" step="0.01" class="num w-full sm:w-[100px]" />
           </div>
-          <Button type="button" variant="ghost" size="icon" @click="removeRow(i)">×</Button>
+          <Button type="button" variant="ghost" size="icon" aria-label="Quitar persona" @click="removeRow(i)">×</Button>
         </div>
 
         <Button type="button" variant="outline" size="sm" class="justify-self-start" @click="addRow">
@@ -167,10 +167,10 @@ async function onSubmit() {
 
         <div class="flex items-center justify-between text-sm text-muted-foreground">
           <span>Asignado: {{ sumaAsignada() }} / {{ debt?.importe_total }}</span>
-          <span v-if="excedeTotal()" class="text-destructive">Excede el importe total</span>
+          <span v-if="excedeTotal()" role="alert" class="text-destructive">Excede el importe total</span>
         </div>
 
-        <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
+        <p v-if="error" role="alert" class="text-sm text-destructive">{{ error }}</p>
 
         <DialogFooter>
           <Button type="button" variant="ghost" @click="emit('update:open', false)">Cancelar</Button>

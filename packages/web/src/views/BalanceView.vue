@@ -16,13 +16,13 @@ const { year, mode, includeVariableEstimate, summary, loading, error, shiftYear 
       <h1 class="text-xl font-bold tracking-tight font-display">Balance anual</h1>
     </header>
 
-    <div v-if="error" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+    <div v-if="error" role="alert" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
       {{ error }}
     </div>
 
     <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
       <div class="rounded-xl border border-border bg-card p-3.5">
-        <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div class="flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
           <IconIngreso class="size-3.5" /> Ingresos
         </div>
         <div class="num mt-1.5 text-2xl font-semibold text-pos">
@@ -30,7 +30,7 @@ const { year, mode, includeVariableEstimate, summary, loading, error, shiftYear 
         </div>
       </div>
       <div class="rounded-xl border border-border bg-card p-3.5">
-        <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div class="flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
           <IconEgreso class="size-3.5" /> Egresos
         </div>
         <div class="num mt-1.5 text-2xl font-semibold text-neg">
@@ -38,7 +38,7 @@ const { year, mode, includeVariableEstimate, summary, loading, error, shiftYear 
         </div>
       </div>
       <div class="rounded-xl border border-border bg-card p-3.5">
-        <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div class="flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
           <IconBalance class="size-3.5" /> Balance
         </div>
         <div class="num mt-1.5 text-2xl font-semibold">

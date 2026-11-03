@@ -44,7 +44,7 @@ const ALCANCES: { value: "general" | "ingreso" | "egreso"; label: string }[] = [
 
 const kind = ref<"tipo" | "concepto" | "estado" | "medio_pago" | "persona">("concepto");
 const nombre = ref("");
-const color = ref("#6b7280");
+const color = ref("#89a4a7");
 const alcance = ref<"general" | "ingreso" | "egreso">("general");
 const error = ref<string | null>(null);
 const submitting = ref(false);
@@ -52,7 +52,7 @@ const submitting = ref(false);
 function reset() {
   kind.value = "concepto";
   nombre.value = "";
-  color.value = "#6b7280";
+  color.value = "#89a4a7";
   alcance.value = "general";
   error.value = null;
 }
@@ -101,9 +101,9 @@ function onSubmit() {
 
       <form class="grid gap-3" @submit.prevent="onSubmit">
         <div class="grid gap-1.5">
-          <Label>Tipo de tag (kind)</Label>
+          <Label for="tf-tipo-de-tag-kind">Tipo de tag (kind)</Label>
           <Select v-model="kind" :disabled="!!tag">
-            <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
+            <SelectTrigger id="tf-tipo-de-tag-kind" class="w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem v-for="k in TAG_KINDS" :key="k.value" :value="k.value">{{ k.label }}</SelectItem>
             </SelectContent>
@@ -127,9 +127,9 @@ function onSubmit() {
             <Input id="tf-color" v-model="color" type="color" class="h-9 p-1" />
           </div>
           <div class="grid gap-1.5">
-            <Label>Alcance</Label>
+            <Label for="tf-alcance">Alcance</Label>
             <Select v-model="alcance">
-              <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="tf-alcance" class="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="a in ALCANCES" :key="a.value" :value="a.value">{{ a.label }}</SelectItem>
               </SelectContent>
@@ -137,7 +137,7 @@ function onSubmit() {
           </div>
         </div>
 
-        <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
+        <p v-if="error" role="alert" class="text-sm text-destructive">{{ error }}</p>
 
         <DialogFooter>
           <Button type="button" variant="ghost" @click="emit('update:open', false)">Cancelar</Button>

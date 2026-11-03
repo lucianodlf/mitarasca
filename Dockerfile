@@ -1,6 +1,7 @@
 # Imagen de la demo: API (Hono + tRPC) que además sirve el build de la SPA.
 # Build: docker build -t mitarasca .   (contexto = raíz del repo; ver .dockerignore)
-# La DB no va en la imagen: se monta en /app/data (ver deploy/demo/docker-compose.yml).
+# La DB no va en la imagen: se monta en /app/data. Sin DB_PATH usa /app/data/mitarasca.db,
+# o /app/data/demo.db con MITARASCA_DEMO=1 (el deploy de la nube fija su DB_PATH).
 
 FROM oven/bun:1.3.14 AS deps
 WORKDIR /app
@@ -29,7 +30,6 @@ FROM oven/bun:1.3.14-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production \
     API_PORT=3787 \
-    DB_PATH=/app/data/demo.db \
     MITARASCA_WEB_DIST=/app/web-dist
 COPY --from=prod-deps /app/node_modules node_modules
 COPY --from=prod-deps /app/package.json /app/tsconfig.base.json ./

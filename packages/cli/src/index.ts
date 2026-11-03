@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import {
@@ -7,12 +7,17 @@ import {
   type DebtDirection,
   type DebtFrecuencia,
   type DuplicateNivel,
+  type InvisibleModo,
+  type InvisibleRule,
   type MovementDirection,
   buildFinancialReport,
   createDebt,
+  createInvisibleRule,
   createMovement,
   deleteDebt,
+  deleteInvisibleRule,
   deleteMovement,
+  ensureDb,
   findExactInDb,
   findExactPairs,
   findReflejos,
@@ -23,6 +28,7 @@ import {
   getMovementById,
   getYearBalanceWithEstimate,
   listDebts,
+  listInvisibleRules,
   listMovementsByDateRange,
   makeMovementsRepo,
   partitionImages,
@@ -30,6 +36,8 @@ import {
   payInstallment,
   recordFinding,
   renderReportMarkdown,
+  resolveDbPath,
+  setInvisibleRuleActiva,
   shareDebt,
   summarizeByMonth,
   totalsByMedioPago,
@@ -39,6 +47,8 @@ import {
   updateMovement,
 } from "@mitarasca/core";
 import { loadConfig, resolveConfigPath } from "@mitarasca/core";
+// Subpath aparte: el barrel lo importa también la web (vía tipos de la api) y no tiene bun-types.
+import { seedDemoDb } from "@mitarasca/core/seed-demo";
 import { Command } from "commander";
 import { z } from "zod";
 import { runInstall } from "./install.js";
@@ -59,16 +69,21 @@ import { formatDayMonth, formatMoney, formatSigned, formatTable } from "./lib/fo
 import { resolveTagsForCreate, resolveTagsForUpdate } from "./lib/tags.js";
 import type { TagsCreateInput, TagsUpdateInput } from "./lib/tags.js";
 import { startServer } from "./serve.js";
+import { runUninstall } from "./uninstall.js";
 
 const DB_PATH_HELP =
-  "La ruta de la DB se resuelve por config (mitarasca config set db_path ...), por instalación, o con DB_PATH como override explícito.";
+  "La ruta de la DB se resuelve en este orden: DB_PATH, --demo (o MITARASCA_DEMO=1), db_path del config (mitarasca config set db_path ...) y la ruta por defecto. Primera vez: mitarasca init (base vacía) o mitarasca demo (datos de ejemplo).";
 
 const program = new Command();
 
 program
   .name("mitarasca")
-  .description("CLI de mitarasca — operaciones de lectura sobre movimientos, balance y deudas")
-  .addHelpText("after", `\n${DB_PATH_HELP}`);
+  .description("mitarasca: finanzas personales. Movimientos, balance, deudas, web y servidor MCP")
+  .option("--demo", "Usa la DB de demo en vez de la tuya (equivale a MITARASCA_DEMO=1)")
+  .addHelpText("after", `\n${DB_PATH_HELP}`)
+  .hook("preAction", () => {
+    if (program.opts().demo) process.env.MITARASCA_DEMO = "1";
+  });
 
 function parseDireccionMovimiento(value: string): MovementDirection {
   if (value !== "in" && value !== "out") {
@@ -108,6 +123,13 @@ function parseDireccionDeuda(value: string): DebtDirection {
 function parseFrecuencia(value: string): DebtFrecuencia {
   if (value !== "mensual" && value !== "dias") {
     throw new Error(`--frecuencia inválida: "${value}" (esperado "mensual" o "dias")`);
+  }
+  return value;
+}
+
+function parseModoInvisible(value: string): InvisibleModo {
+  if (value !== "exacto" && value !== "contiene") {
+    throw new Error(`--modo inválido: "${value}" (esperado "exacto" o "contiene")`);
   }
   return value;
 }
@@ -1281,6 +1303,135 @@ El archivo debe ser un JSON array. Ejemplo:
     }
   });
 
+// ── Comando regla-invisible ──────────────────────────────────────────────────
+
+function findInvisibleRule(id: number): InvisibleRule {
+  const regla = listInvisibleRules().find((r) => r.id === id);
+  if (!regla) throw new Error(`Regla invisible #${id} no encontrada`);
+  return regla;
+}
+
+function describirRegla(r: InvisibleRule): string {
+  return `#${r.id} "${r.patron}" (${r.modo}, ${r.direccion ?? "ambas"})`;
+}
+
+const reglaInvisibleCmd = program
+  .command("regla-invisible")
+  .description("Gestionar las reglas que excluyen movimientos del import (invisibles)");
+
+reglaInvisibleCmd
+  .command("listar")
+  .description("Lista las reglas invisibles")
+  .option("--activas", "mostrar solo las reglas activas")
+  .option("--json", "imprimir salida en formato JSON")
+  .addHelpText("after", `\n${DB_PATH_HELP}`)
+  .action((opts: { activas?: boolean; json?: boolean }) => {
+    const reglas = listInvisibleRules(opts.activas ?? false);
+
+    if (opts.json) {
+      console.log(JSON.stringify(reglas, null, 2));
+      return;
+    }
+    if (reglas.length === 0) {
+      console.log("Sin reglas invisibles.");
+      return;
+    }
+    const headers = ["ID", "Patrón", "Modo", "Dirección", "Activa"];
+    const rows = reglas.map((r) => [
+      String(r.id),
+      r.patron,
+      r.modo,
+      r.direccion ?? "ambas",
+      r.activa ? "sí" : "no",
+    ]);
+    console.log(formatTable(headers, rows));
+  });
+
+reglaInvisibleCmd
+  .command("crear")
+  .description("Crea una regla invisible")
+  .requiredOption("--patron <texto>", "Texto a comparar con el detalle del movimiento")
+  .option("--modo <exacto|contiene>", "Cómo se compara el patrón", "exacto")
+  .option("--direccion <in|out>", "Dirección a la que aplica (default: ambas)")
+  .option("--inactiva", "Crear la regla desactivada")
+  .option("--json", "Output en formato JSON")
+  .action(
+    (opts: {
+      patron: string;
+      modo: string;
+      direccion?: string;
+      inactiva?: boolean;
+      json?: boolean;
+    }) => {
+      const patron = opts.patron.trim();
+      if (patron === "") throw new Error("--patron no puede estar vacío");
+
+      const regla = createInvisibleRule({
+        patron,
+        modo: parseModoInvisible(opts.modo),
+        direccion: opts.direccion !== undefined ? parseDireccionMovimiento(opts.direccion) : null,
+        activa: !opts.inactiva,
+      });
+
+      if (opts.json) {
+        console.log(JSON.stringify(regla, null, 2));
+        return;
+      }
+      console.log(`Regla invisible ${describirRegla(regla)} creada.`);
+    }
+  );
+
+reglaInvisibleCmd
+  .command("borrar <id>")
+  .description("Elimina una regla invisible")
+  .option("--force", "Omitir confirmación interactiva")
+  .option("--json", "Output en formato JSON")
+  .action((id: string, opts: { force?: boolean; json?: boolean }) => {
+    const reglaId = parseNumero("id", id);
+    const existing = findInvisibleRule(reglaId);
+
+    if (!opts.force) {
+      const respuesta = prompt(`¿Eliminar regla invisible ${describirRegla(existing)}? (s/N): `);
+      if (respuesta?.toLowerCase() !== "s" && respuesta?.toLowerCase() !== "y") {
+        console.log("Operación cancelada.");
+        return;
+      }
+    }
+
+    deleteInvisibleRule(reglaId);
+
+    if (opts.json) {
+      console.log(JSON.stringify({ eliminado: true, id: reglaId }));
+      return;
+    }
+    console.log(`Regla invisible ${describirRegla(existing)} eliminada.`);
+  });
+
+for (const [nombre, activa] of [
+  ["activar", true],
+  ["desactivar", false],
+] as const) {
+  reglaInvisibleCmd
+    .command(`${nombre} <id>`)
+    .description(
+      activa
+        ? "Reactiva una regla invisible"
+        : "Desactiva una regla invisible sin borrarla (deja de filtrar en el import)"
+    )
+    .option("--json", "Output en formato JSON")
+    .action((id: string, opts: { json?: boolean }) => {
+      const regla = setInvisibleRuleActiva(parseNumero("id", id), activa);
+
+      if (opts.json) {
+        console.log(JSON.stringify(regla, null, 2));
+        return;
+      }
+      console.log(
+        `Regla invisible ${describirRegla(regla)} ${activa ? "activada" : "desactivada"}.`
+      );
+    });
+}
+
 // ── Comando config ────────────────────────────────────────────────────────
 
 const configCmd = program.command("config").description("Leer o escribir config de mitarasca");
@@ -1330,7 +1481,59 @@ configCmd
   });
 
 program
+  .command("init")
+  .description("Crea la DB por defecto (o la migra si ya existe)")
+  .action(() => {
+    if (process.env.MITARASCA_DEMO === "1") {
+      console.log("En modo demo usá `mitarasca demo` (siembra la DB de demo y abre la web).");
+      return;
+    }
+    ensureDb();
+    console.log(`DB lista: ${resolveDbPath()}`);
+  });
+
+program
+  .command("demo")
+  .description("Siembra la DB de demo si falta y abre la web sobre ella")
+  .option("--reseed", "Regenera la DB de demo desde cero")
+  .option("--port <port>", "Puerto a usar", "3787")
+  .action(async (opts: { reseed?: boolean; port: string }) => {
+    process.env.MITARASCA_DEMO = "1";
+    const dbPath = resolveDbPath();
+    if (opts.reseed || !existsSync(dbPath)) {
+      seedDemoDb(dbPath);
+      console.log(`Demo generada: ${dbPath}`);
+    }
+    await startServer({ port: Number(opts.port), openBrowser: true });
+  });
+
+program
+  .command("mcp")
+  .description("Servidor MCP por stdio (para Claude Code, Claude Desktop u otro cliente MCP)")
+  .action(async () => {
+    // stdout es el canal JSON-RPC: nada de console.log acá.
+    await import("@mitarasca/mcp");
+  });
+
+program
+  .command("uninstall")
+  .description("Quita el comando mitarasca del PATH; no borra datos, muestra dónde quedan")
+  .action(() => {
+    const { linkMsg, leftovers } = runUninstall({
+      binPath: resolve(homedir(), ".local/bin/mitarasca"),
+      cliEntry: new URL(import.meta.url).pathname,
+    });
+    console.log(linkMsg);
+    if (leftovers.length === 0) return;
+    console.log("\nQuedan estos datos y configs (no se borraron):");
+    for (const p of leftovers) console.log(`  ${p}`);
+    console.log("\nPara borrarlos:");
+    for (const p of leftovers) console.log(`  rm -rf ${JSON.stringify(p)}`);
+  });
+
+program
   .command("ui")
+  .alias("web")
   .description("Levanta el servidor y abre el navegador")
   .option("--port <port>", "Puerto a usar", "3787")
   .action(async (opts: { port: string }) => {
@@ -1395,4 +1598,8 @@ program
     }
   );
 
-program.parse();
+program.parseAsync().catch((err: unknown) => {
+  if (process.env.MITARASCA_DEBUG === "1") console.error(err);
+  else console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+  process.exit(1);
+});

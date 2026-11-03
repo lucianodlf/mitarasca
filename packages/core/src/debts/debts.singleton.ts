@@ -3,7 +3,10 @@ import { makeDebtsRepo } from "./debts.repository.js";
 
 type Repo = ReturnType<typeof makeDebtsRepo>;
 let repo: Repo | undefined;
-const getRepo = (): Repo => (repo ??= makeDebtsRepo(getDb()));
+const getRepo = (): Repo => {
+  if (!repo) repo = makeDebtsRepo(getDb());
+  return repo;
+};
 
 export const createDebt: Repo["createDebt"] = (...args) => getRepo().createDebt(...args);
 export const getDebtById: Repo["getDebtById"] = (...args) => getRepo().getDebtById(...args);

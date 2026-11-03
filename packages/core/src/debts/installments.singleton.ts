@@ -3,7 +3,10 @@ import { makeInstallmentsRepo } from "./installments.repository.js";
 
 type Repo = ReturnType<typeof makeInstallmentsRepo>;
 let repo: Repo | undefined;
-const getRepo = (): Repo => (repo ??= makeInstallmentsRepo(getDb()));
+const getRepo = (): Repo => {
+  if (!repo) repo = makeInstallmentsRepo(getDb());
+  return repo;
+};
 
 export const listInstallmentsByDebt: Repo["listInstallmentsByDebt"] = (...args) =>
   getRepo().listInstallmentsByDebt(...args);

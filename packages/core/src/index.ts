@@ -1,4 +1,12 @@
-export { getDb, ensureDb, resolveDbPath } from "./db/client.js";
+export {
+  assertDbExists,
+  DbNotFoundError,
+  ensureDb,
+  getDb,
+  isDemoMode,
+  resolveDbPath,
+  resolveDemoDbPath,
+} from "./db/client.js";
 export type { DbClient } from "./db/client.js";
 export * from "./db/schema.js";
 export * from "./db/seed.js";

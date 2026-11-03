@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown, ChevronRight, Pencil } from "lucide-vue-next";
+import { ChevronDown, ChevronRight, Pencil } from "@lucide/vue";
 import IconIngreso from "@/components/icons/IconIngreso.vue";
 import IconEgreso from "@/components/icons/IconEgreso.vue";
 import IconCompartido from "@/components/icons/IconCompartido.vue";
@@ -165,19 +165,19 @@ async function onSaveInstallment(
       <TableHeader>
         <TableRow>
           <TableHead class="w-[28px]" />
-          <TableHead class="min-w-[180px]">Descripción</TableHead>
-          <TableHead>Medio de pago</TableHead>
-          <TableHead>Persona</TableHead>
-          <TableHead class="w-[90px]">Últ. pago</TableHead>
-          <TableHead class="w-[110px] text-right">Cuota</TableHead>
-          <TableHead class="w-[70px] text-right">Cuotas</TableHead>
-          <TableHead class="w-[130px] text-right">Importe total</TableHead>
+          <TableHead class="md:min-w-[180px]">Descripción</TableHead>
+          <TableHead class="hidden md:table-cell">Medio de pago</TableHead>
+          <TableHead class="hidden md:table-cell">Persona</TableHead>
+          <TableHead class="hidden w-[90px] md:table-cell">Últ. pago</TableHead>
+          <TableHead class="hidden w-[110px] text-right md:table-cell">Cuota</TableHead>
+          <TableHead class="hidden w-[70px] text-right md:table-cell">Cuotas</TableHead>
+          <TableHead class="text-right md:w-[130px]">Importe total</TableHead>
           <TableHead class="w-[84px]" />
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow v-if="loading">
-          <TableCell :colspan="9" class="text-center text-sm text-muted-foreground">Cargando…</TableCell>
+          <TableCell :colspan="9" class="text-center text-sm text-muted-foreground"><span role="status">Cargando…</span></TableCell>
         </TableRow>
         <TableEmpty v-else-if="visibleDebts.length === 0" :colspan="9">
           <EmptyState
@@ -191,15 +191,17 @@ async function onSaveInstallment(
             tabindex="0"
             class="cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:-outline-offset-2"
             @click="toggleExpand(d)"
+            @keydown.enter.self="toggleExpand(d)"
+            @keydown.space.self.prevent="toggleExpand(d)"
           >
             <TableCell>
-              <Button variant="ghost" size="icon" class="size-6" :aria-label="`Ver detalle de ${d.descripcion}`">
+              <Button variant="ghost" size="icon" class="size-6" :aria-label="`Ver detalle de ${d.descripcion}`" :aria-expanded="expandedId === d.id">
                 <ChevronDown v-if="expandedId === d.id" class="size-3.5" />
                 <ChevronRight v-else class="size-3.5" />
               </Button>
             </TableCell>
-            <TableCell>
-              <div class="flex items-center gap-2.5">
+            <TableCell class="whitespace-normal md:whitespace-nowrap">
+              <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 md:flex-nowrap">
                 <span
                   :class="[
                     'grid size-5.5 shrink-0 place-items-center rounded-md',
@@ -209,7 +211,7 @@ async function onSaveInstallment(
                   <IconIngreso v-if="d.direccion === 'me_deben'" class="size-3.5" />
                   <IconEgreso v-else class="size-3.5" />
                 </span>
-                <span class="truncate text-sm">{{ d.descripcion }}</span>
+                <span class="min-w-24 flex-1 wrap-anywhere text-sm md:flex-none md:truncate">{{ d.descripcion }}</span>
                 <Badge v-if="d.derivadas_count > 0" variant="secondary" class="shrink-0">Compartida</Badge>
                 <Badge
                   v-if="d.parent_debt_id != null"
@@ -222,19 +224,19 @@ async function onSaveInstallment(
                 </Badge>
               </div>
             </TableCell>
-            <TableCell>
+            <TableCell class="hidden md:table-cell">
               <Badge v-if="d.medioPago" variant="secondary" :style="tagBadgeStyle(d.medioPago.color)">
                 {{ d.medioPago.nombre }}
               </Badge>
             </TableCell>
-            <TableCell>
+            <TableCell class="hidden md:table-cell">
               <Badge v-if="d.persona" variant="secondary" :style="tagBadgeStyle(d.persona.color)">
                 {{ d.persona.nombre }}
               </Badge>
             </TableCell>
-            <TableCell class="num text-xs">{{ d.fecha_ultimo_pago ? formatDayMonth(d.fecha_ultimo_pago) : "—" }}</TableCell>
-            <TableCell class="num text-right text-sm">{{ formatMoney(d.importe_cuota) }}</TableCell>
-            <TableCell class="num text-right text-sm">
+            <TableCell class="num hidden text-xs md:table-cell">{{ d.fecha_ultimo_pago ? formatDayMonth(d.fecha_ultimo_pago) : "—" }}</TableCell>
+            <TableCell class="num hidden text-right text-sm md:table-cell">{{ formatMoney(d.importe_cuota) }}</TableCell>
+            <TableCell class="num hidden text-right text-sm md:table-cell">
               {{ d.cuotas_pagadas > 0 ? `${d.cuotas_pagadas}/${d.cuotas_total}` : d.cuotas_total }}
             </TableCell>
             <TableCell class="num text-right font-semibold">{{ formatMoney(d.importe_total + d.ajuste_manual) }}</TableCell>

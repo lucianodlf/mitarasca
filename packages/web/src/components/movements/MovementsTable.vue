@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowDown, ArrowUp, ArrowUpDown, Ban, Link2, Pencil, Trash2 } from "lucide-vue-next";
+import { ArrowDown, ArrowUp, ArrowUpDown, Ban, Link2, Pencil, Trash2 } from "@lucide/vue";
 import IconIngreso from "@/components/icons/IconIngreso.vue";
 import IconEgreso from "@/components/icons/IconEgreso.vue";
 import IconPagado from "@/components/icons/IconPagado.vue";
@@ -26,7 +26,7 @@ import { tagBadgeStyle } from "@/lib/tag-color";
 import { trpc } from "@/lib/trpc";
 import type { MovementWithTags } from "@/composables/useMovements";
 
-defineProps<{
+const props = defineProps<{
   movements: MovementWithTags[];
   loading: boolean;
   sortField?: "detalle" | "fecha" | "monto";
@@ -85,6 +85,11 @@ async function onPagoRapido(m: MovementWithTags) {
     toast.error(e instanceof Error ? e.message : "Error al marcar el movimiento como pagado");
   }
 }
+
+function ariaSort(field: string) {
+  if (props.sortField !== field) return "none";
+  return props.sortDir === "asc" ? "ascending" : "descending";
+}
 </script>
 
 <template>
@@ -92,26 +97,26 @@ async function onPagoRapido(m: MovementWithTags) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead class="min-w-[180px]">
-            <button class="inline-flex items-center gap-1 hover:text-foreground" @click="emit('sort', 'detalle')">
+          <TableHead class="md:min-w-[180px]" :aria-sort="ariaSort('detalle')">
+            <button type="button" class="inline-flex items-center gap-1 hover:text-foreground" @click="emit('sort', 'detalle')">
               Detalle
               <ArrowUp v-if="sortField === 'detalle' && sortDir === 'asc'" class="size-3.5" />
               <ArrowDown v-else-if="sortField === 'detalle' && sortDir === 'desc'" class="size-3.5" />
               <ArrowUpDown v-else class="size-3.5 opacity-30" />
             </button>
           </TableHead>
-          <TableHead class="w-[64px]">
-            <button class="inline-flex items-center gap-1 hover:text-foreground" @click="emit('sort', 'fecha')">
+          <TableHead class="hidden w-[64px] md:table-cell" :aria-sort="ariaSort('fecha')">
+            <button type="button" class="inline-flex items-center gap-1 hover:text-foreground" @click="emit('sort', 'fecha')">
               Fecha
               <ArrowUp v-if="sortField === 'fecha' && sortDir === 'asc'" class="size-3.5" />
               <ArrowDown v-else-if="sortField === 'fecha' && sortDir === 'desc'" class="size-3.5" />
               <ArrowUpDown v-else class="size-3.5 opacity-30" />
             </button>
           </TableHead>
-          <TableHead>Tags</TableHead>
-          <TableHead class="w-[110px]">Estado</TableHead>
-          <TableHead class="w-[130px] text-right">
-            <button class="inline-flex items-center gap-1 hover:text-foreground" @click="emit('sort', 'monto')">
+          <TableHead class="hidden md:table-cell">Tags</TableHead>
+          <TableHead class="hidden w-[110px] md:table-cell">Estado</TableHead>
+          <TableHead class="text-right md:w-[130px]" :aria-sort="ariaSort('monto')">
+            <button type="button" class="inline-flex items-center gap-1 hover:text-foreground" @click="emit('sort', 'monto')">
               Monto
               <ArrowUp v-if="sortField === 'monto' && sortDir === 'asc'" class="size-3.5" />
               <ArrowDown v-else-if="sortField === 'monto' && sortDir === 'desc'" class="size-3.5" />
@@ -124,7 +129,7 @@ async function onPagoRapido(m: MovementWithTags) {
       <TableBody>
         <TableRow v-if="loading">
           <TableCell :colspan="6" class="text-center text-sm text-muted-foreground">
-            Cargando…
+            <span role="status">Cargando…</span>
           </TableCell>
         </TableRow>
         <TableEmpty v-else-if="movements.length === 0" :colspan="6">
@@ -145,8 +150,10 @@ async function onPagoRapido(m: MovementWithTags) {
             isDeshabilitado(m) && 'opacity-50',
           ]"
           @click="emit('edit', m)"
+          @keydown.enter.self="emit('edit', m)"
+          @keydown.space.self.prevent="emit('edit', m)"
         >
-          <TableCell>
+          <TableCell class="whitespace-normal md:whitespace-nowrap">
             <div class="flex items-center gap-2.5">
               <span
                 :class="[
@@ -157,10 +164,13 @@ async function onPagoRapido(m: MovementWithTags) {
                 <IconIngreso v-if="m.direccion === 'in'" class="size-3.5" />
                 <IconEgreso v-else class="size-3.5" />
               </span>
-              <span :class="['truncate text-sm', isDeshabilitado(m) && 'line-through']">{{ m.detalle }}</span>
+              <span class="flex min-w-0 flex-col">
+                <span :class="['wrap-anywhere text-sm md:truncate', isDeshabilitado(m) && 'line-through']">{{ m.detalle }}</span>
+                <span class="num text-xs text-muted-foreground md:hidden">{{ formatDayMonth(m.fecha) }}</span>
+              </span>
               <span
                 v-if="m.imported_at"
-                class="text-muted-foreground/60 text-[10px] leading-none"
+                class="hidden text-muted-foreground text-label leading-none md:inline"
                 :title="`Importado el ${formatImportedAt(m.imported_at)}`"
                 aria-label="Movimiento importado"
                 >●</span
@@ -168,17 +178,16 @@ async function onPagoRapido(m: MovementWithTags) {
               <span
                 v-if="m.regla_op === 'div' && (m.regla_factor ?? 0) > 1"
                 :class="[
-                  'inline-block size-2 rounded-full',
-                  m.shares_pendientes
-                    ? 'bg-orange-500 shadow-[0_0_6px_2px_rgba(249,115,22,0.7)]'
-                    : 'bg-green-500 shadow-[0_0_6px_2px_rgba(34,197,94,0.7)]',
+                  'inline-block size-2.5 rounded-full',
+                  m.shares_pendientes ? 'border-2 border-neg' : 'bg-pos',
                 ]"
+                role="img"
                 :aria-label="m.shares_pendientes ? 'División pendiente de pago' : 'División completa'"
               />
             </div>
           </TableCell>
-          <TableCell class="num text-xs">{{ formatDayMonth(m.fecha) }}</TableCell>
-          <TableCell>
+          <TableCell class="num hidden text-xs md:table-cell">{{ formatDayMonth(m.fecha) }}</TableCell>
+          <TableCell class="hidden md:table-cell">
             <div class="flex flex-wrap gap-1">
               <Badge v-if="tipoTag(m)" variant="secondary" class="gap-1 bg-primary/10 text-primary">
                 <IconFijo v-if="tipoTag(m)?.nombre === 'Fijo'" class="size-3" />
@@ -193,7 +202,7 @@ async function onPagoRapido(m: MovementWithTags) {
               </Badge>
             </div>
           </TableCell>
-          <TableCell>
+          <TableCell class="hidden md:table-cell">
             <Badge
               v-if="estadoTag(m)"
               class="gap-1"
@@ -225,7 +234,7 @@ async function onPagoRapido(m: MovementWithTags) {
                 v-if="estadoTag(m)?.nombre !== 'Pagado' && !isDeshabilitado(m)"
                 variant="ghost"
                 size="icon"
-                class="size-7 text-muted-foreground hover:text-pos"
+                class="size-7 pointer-coarse:size-10 text-muted-foreground hover:text-pos"
                 :aria-label="`Marcar ${m.detalle} como pagado`"
                 @click.stop="onPagoRapido(m)"
               >
@@ -235,7 +244,7 @@ async function onPagoRapido(m: MovementWithTags) {
                 v-if="m.installment_id != null"
                 variant="ghost"
                 size="icon"
-                class="size-7 text-muted-foreground hover:text-primary"
+                class="size-7 pointer-coarse:size-10 text-muted-foreground hover:text-primary"
                 :aria-label="`Ver cuota vinculada a ${m.detalle}`"
                 @click.stop="goToDebt(m)"
               >
@@ -244,7 +253,7 @@ async function onPagoRapido(m: MovementWithTags) {
               <Button
                 variant="ghost"
                 size="icon"
-                class="size-7 text-muted-foreground hover:text-foreground"
+                class="hidden size-7 text-muted-foreground hover:text-foreground md:inline-flex"
                 :aria-label="`Editar ${m.detalle}`"
                 @click.stop="emit('edit', m)"
               >
@@ -253,7 +262,7 @@ async function onPagoRapido(m: MovementWithTags) {
               <Button
                 variant="ghost"
                 size="icon"
-                class="size-7 text-muted-foreground hover:text-destructive"
+                class="size-7 pointer-coarse:size-10 text-muted-foreground hover:text-destructive"
                 :aria-label="`Eliminar ${m.detalle}`"
                 @click.stop="emit('delete-request', m.id)"
               >

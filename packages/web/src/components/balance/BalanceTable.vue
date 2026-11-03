@@ -39,7 +39,7 @@ function balanceClass(balance: number) {
       <TableBody>
         <TableRow v-if="loading">
           <TableCell :colspan="summary?.includesVariableEstimate ? 5 : 4" class="text-center text-sm text-muted-foreground">
-            Cargando…
+            <span role="status">Cargando…</span>
           </TableCell>
         </TableRow>
         <template v-else-if="summary">

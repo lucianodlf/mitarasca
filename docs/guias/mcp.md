@@ -10,12 +10,10 @@ escritura son estables, pero la configuración es manual y hay tools con bugs co
 
 ## Antes de empezar
 
-- Un clon del repo con `bun install` hecho (ver la [guía de la CLI](./cli.md)).
-- La ruta absoluta al servidor: `<ruta-del-repo>/packages/mcp/src/index.ts`.
-- La ruta absoluta a la DB. Pasarla siempre con `DB_PATH`: el cliente MCP lanza el servidor
-  desde su propio directorio de trabajo, y sin `DB_PATH` la DB depende de ese directorio.
-
-Para probar con la demo: `bun run db:seed:demo` y usar `<ruta-del-repo>/data/demo.db`.
+- `mitarasca` instalado con `scripts/install.sh` (ver la [guía de la CLI](./cli.md)).
+- `mitarasca mcp` es el servidor: usa tu base (`mitarasca init`) y `mitarasca mcp --demo`
+  usa la demo (`mitarasca demo` la crea). Si la base no existe, el servidor arranca igual,
+  lo avisa por stderr y cada tool devuelve el error con el comando a correr.
 
 **El MCP escribe.** 10 de las 18 tools crean, editan o borran movimientos y deudas, y
 `eliminar_movimiento` borra de forma definitiva y no pide confirmación: depende de que el
@@ -28,14 +26,17 @@ cp /ruta/a/mitarasca.db /ruta/a/backups/$(date +%Y%m%d)_mitarasca.db
 ## Claude Code
 
 ```bash
-claude mcp add mitarasca -e DB_PATH=/ruta/absoluta/a/demo.db \
-  -- bun /ruta/absoluta/al/repo/packages/mcp/src/index.ts
+# Scope user: disponible en todos tus proyectos (se guarda en ~/.claude.json)
+claude mcp add -s user mitarasca -- mitarasca mcp --demo
+
+# Scope project: solo este proyecto, compartible (se guarda en .mcp.json)
+claude mcp add -s project mitarasca -- mitarasca mcp
 
 claude mcp list            # debe mostrar "mitarasca: ... Connected"
 ```
 
-Por defecto queda en el scope `local` (solo el proyecto actual). Con `-s user` queda
-disponible en todos los proyectos.
+Sin `-s` queda en el scope `local` (solo vos, en el proyecto actual). Sacar `--demo` cuando
+quieras usar tu base. Referencia: [MCP en Claude Code](https://code.claude.com/docs/en/mcp).
 
 Probalo con una pregunta: "¿cuál es el resumen de octubre de 2026 en mitarasca?". Claude
 usa `resumen_mensual` y responde con los datos de la DB.
@@ -43,28 +44,29 @@ usa `resumen_mensual` y responde con los datos de la DB.
 ## Claude Desktop
 
 Abrir Settings, pestaña Developer, Edit Config. El archivo es
-`~/Library/Application Support/Claude/claude_desktop_config.json` en macOS,
-`%APPDATA%\Claude\claude_desktop_config.json` en Windows y
-`~/.config/Claude/claude_desktop_config.json` en Linux. Agregar:
+`~/.config/Claude/claude_desktop_config.json` en Linux
+(`~/Library/Application Support/Claude/claude_desktop_config.json` en macOS y
+`%APPDATA%\Claude\claude_desktop_config.json` en Windows). Agregar:
 
 ```json
 {
   "mcpServers": {
     "mitarasca": {
-      "command": "bun",
-      "args": ["/ruta/absoluta/al/repo/packages/mcp/src/index.ts"],
-      "env": {
-        "DB_PATH": "/ruta/absoluta/a/demo.db"
-      }
+      "command": "/home/<usuario>/.bun/bin/bun",
+      "args": ["/home/<usuario>/.local/share/mitarasca/packages/cli/src/index.ts", "mcp", "--demo"]
     }
   }
 }
 ```
 
-Cerrar Claude Desktop del todo y volver a abrirlo. Si no conecta, usar en `command` la ruta
-absoluta de Bun (`which bun`): la app puede no tener tu PATH de la terminal. Los logs están
-en `~/Library/Logs/Claude/mcp*.log` (macOS), `%APPDATA%\Claude\logs` (Windows) o
-`~/.config/Claude/logs/mcp*.log` (Linux).
+Claude Desktop no hereda el PATH de la terminal: `command` es la ruta absoluta de Bun
+(`which bun`) y el primer arg es la ruta absoluta al `index.ts` de la CLI en tu clon
+(`readlink -f ~/.local/bin/mitarasca`). Sacar `"--demo"` para usar tu base.
+
+Cerrar Claude Desktop del todo y volver a abrirlo. Los logs están en
+`~/.config/Claude/logs/mcp*.log` (Linux), `~/Library/Logs/Claude/mcp*.log` (macOS) o
+`%APPDATA%\Claude\logs` (Windows). Referencia:
+[Connect to local MCP servers](https://modelcontextprotocol.io/docs/develop/connect-local-servers).
 
 ## Tools disponibles
 
@@ -106,5 +108,4 @@ Escritura:
   funciona.
 - No hay tools de tags: `crear_deuda` y `editar_deuda` reciben IDs numéricos, que se
   obtienen con `listar_deudas` o desde la web.
-- No hay script de arranque ni registro automático: `mitarasca install` todavía no registra
-  el servidor en ningún cliente.
+- No hay registro automático: el servidor se agrega a mano en cada cliente.

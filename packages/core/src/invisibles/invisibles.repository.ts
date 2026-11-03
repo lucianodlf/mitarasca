@@ -17,6 +17,7 @@ export interface InvisiblesRepo {
   listRules(soloActivas?: boolean): InvisibleRule[];
   createRule(data: NewInvisibleRule): InvisibleRule;
   deleteRule(id: number): void;
+  setRuleActiva(id: number, activa: boolean): InvisibleRule;
   partitionCandidates<T extends InvisibleCandidate>(
     candidatos: T[]
   ): { visibles: T[]; invisibles: InvisibleMatch<T>[] };
@@ -49,6 +50,17 @@ export function makeInvisiblesRepo(db: DbClient): InvisiblesRepo {
 
     deleteRule(id: number): void {
       db.delete(invisible_rules).where(eq(invisible_rules.id, id)).run();
+    },
+
+    setRuleActiva(id: number, activa: boolean): InvisibleRule {
+      const row = db
+        .update(invisible_rules)
+        .set({ activa })
+        .where(eq(invisible_rules.id, id))
+        .returning()
+        .all()[0];
+      if (!row) throw new Error(`Regla invisible ${id} no encontrada`);
+      return row;
     },
 
     partitionCandidates<T extends InvisibleCandidate>(candidatos: T[]) {

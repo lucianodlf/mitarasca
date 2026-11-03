@@ -158,7 +158,7 @@ watch(
       <h1 class="text-xl font-bold tracking-tight font-display">Deudas</h1>
     </header>
 
-    <div v-if="error" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+    <div v-if="error" role="alert" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
       {{ error }}
     </div>
 

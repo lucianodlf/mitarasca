@@ -42,6 +42,21 @@ describe("CRUD de reglas", () => {
     repo.deleteRule(r.id);
     expect(repo.listRules()).toHaveLength(0);
   });
+
+  test("setRuleActiva desactiva y reactiva una regla sin perder el patrón", () => {
+    const r = repo.createRule({ patron: "pausable", modo: "contiene" });
+    const desactivada = repo.setRuleActiva(r.id, false);
+    expect(desactivada.activa).toBe(false);
+    expect(desactivada.patron).toBe("pausable");
+    expect(repo.listRules(true)).toHaveLength(0);
+
+    expect(repo.setRuleActiva(r.id, true).activa).toBe(true);
+    expect(repo.listRules(true)).toHaveLength(1);
+  });
+
+  test("setRuleActiva falla si la regla no existe", () => {
+    expect(() => repo.setRuleActiva(999, false)).toThrow("Regla invisible 999 no encontrada");
+  });
 });
 
 describe("partitionCandidates", () => {

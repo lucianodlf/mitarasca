@@ -1,13 +1,16 @@
-# Build y prueba local de la imagen de la demo (la del VPS está en deploy/demo/docker-compose.yml).
-#   docker compose run --rm api bun run packages/core/scripts/seed-demo.ts /app/data/demo.db
-#   docker compose up --build
-# Monta data-docker/ (no data/) para no tocar nunca la DB real.
+# Prueba local con Docker (solo web + API, sin CLI). La del VPS está en deploy/demo/docker-compose.yml.
+# Monta data-docker/ (no data/) para no tocar nunca tu DB local. Crearla antes con tu usuario
+# (mkdir -p data-docker): si la crea Docker queda de root y la imagen corre como uid 1000.
+#   Base vacía:  docker compose run --rm api bun packages/core/scripts/init-db.ts
+#                docker compose up --build
+#   Demo:        docker compose run --rm api bun packages/core/scripts/seed-demo.ts
+#                MITARASCA_DEMO=1 docker compose up --build
 services:
   api:
     build:
       context: .
     environment:
-      DB_PATH: /app/data/demo.db
+      MITARASCA_DEMO: ${MITARASCA_DEMO:-0}
     ports:
       - "127.0.0.1:3787:3787"
     volumes:

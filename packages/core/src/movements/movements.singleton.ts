@@ -3,7 +3,10 @@ import { makeMovementsRepo } from "./movements.repository.js";
 
 type Repo = ReturnType<typeof makeMovementsRepo>;
 let repo: Repo | undefined;
-const getRepo = (): Repo => (repo ??= makeMovementsRepo(getDb()));
+const getRepo = (): Repo => {
+  if (!repo) repo = makeMovementsRepo(getDb());
+  return repo;
+};
 
 export const createMovement: Repo["createMovement"] = (...args) =>
   getRepo().createMovement(...args);

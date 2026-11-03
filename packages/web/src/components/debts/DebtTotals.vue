@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Users } from "lucide-vue-next";
+import { Users } from "@lucide/vue";
 import type { MedioPagoTotals, PersonaTotals } from "@/composables/useDebts";
 import { formatMoney } from "@/lib/format";
 import IconMedioPago from "@/components/icons/IconMedioPago.vue";
@@ -12,7 +12,7 @@ defineProps<{ totalsByMedioPago: MedioPagoTotals[]; totalsByPersona: PersonaTota
 <template>
   <div class="mb-4 grid grid-cols-1 gap-3 md:grid-cols-2">
     <div class="rounded-xl border border-border bg-card p-3.5">
-      <div class="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <div class="mb-2 flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
         <IconMedioPago class="size-3.5" /> Por medio de pago
       </div>
       <EmptyState
@@ -30,7 +30,7 @@ defineProps<{ totalsByMedioPago: MedioPagoTotals[]; totalsByPersona: PersonaTota
     </div>
 
     <div class="rounded-xl border border-border bg-card p-3.5">
-      <div class="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+      <div class="mb-2 flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
         <Users class="size-3.5 text-primary" /> Por persona
       </div>
       <EmptyState
@@ -40,7 +40,7 @@ defineProps<{ totalsByMedioPago: MedioPagoTotals[]; totalsByPersona: PersonaTota
         description="Lo que debés y lo que te deben va a aparecer acá."
       />
       <template v-else>
-        <div class="mb-1 flex items-center justify-end gap-3 text-[10px] text-muted-foreground">
+        <div class="mb-1 flex items-center justify-end gap-3 text-label text-muted-foreground">
           <span class="w-[76px] text-right">Me debe</span>
           <span class="w-[76px] text-right">Le debo</span>
         </div>

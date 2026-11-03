@@ -15,6 +15,7 @@ beforeAll(() => {
 
 afterAll(() => {
   rmSync(distDir, { recursive: true, force: true });
+  // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
   delete process.env.MITARASCA_WEB_DIST;
 });
 

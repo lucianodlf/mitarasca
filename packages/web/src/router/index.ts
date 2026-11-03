@@ -45,3 +45,8 @@ export const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+router.afterEach((to) => {
+  const title = to.meta.title as string | undefined;
+  document.title = title ? `${title} · MiTarasca` : "MiTarasca";
+});

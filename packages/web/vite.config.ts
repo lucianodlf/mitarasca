@@ -10,21 +10,23 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico"],
+      includeAssets: ["favicon.svg", "logo.svg"],
       manifest: {
-        name: "Mitarasca",
-        short_name: "Mitarasca",
+        name: "MiTarasca",
+        short_name: "MiTarasca",
         description: "Gestión de finanzas personales",
         lang: "es",
-        theme_color: "#0f172a",
-        background_color: "#0f172a",
+        theme_color: "#0d151c",
+        background_color: "#0d151c",
         display: "standalone",
-        // ponytail: sin icons hasta tener assets reales (no hay ImageMagick disponible);
-        // agregar pwa-192x192.png / pwa-512x512.png a public/ y restaurar este array antes de publicar.
+        icons: [
+          { src: "pwa-192x192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
+          { src: "pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
+        ],
       },
       workbox: {
         navigateFallbackDenylist: [/^\/trpc/, /^\/health/],
-        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
       },
     }),
   ],

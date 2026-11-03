@@ -1,5 +1,5 @@
 // packages/cli/src/serve.ts
-import { ensureDb } from "@mitarasca/core";
+import { assertDbExists } from "@mitarasca/core";
 
 export type StartServerOptions = {
   port: number;
@@ -7,7 +7,7 @@ export type StartServerOptions = {
 };
 
 export async function startServer(opts: StartServerOptions): Promise<void> {
-  ensureDb();
+  assertDbExists();
 
   const { default: apiServer } = await import("@mitarasca/api");
 
@@ -29,6 +29,10 @@ export async function startServer(opts: StartServerOptions): Promise<void> {
   if (opts.openBrowser) {
     const openCmd =
       process.platform === "darwin" ? "open" : process.platform === "win32" ? "start" : "xdg-open";
-    Bun.spawn([openCmd, url], { stdout: "ignore", stderr: "ignore" });
+    try {
+      Bun.spawn([openCmd, url], { stdout: "ignore", stderr: "ignore" });
+    } catch {
+      console.log(`No pude abrir el navegador (${openCmd}); abrí ${url} a mano.`);
+    }
   }
 }

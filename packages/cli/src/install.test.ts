@@ -3,8 +3,8 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
-  readdirSync,
   readFileSync,
+  readdirSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -111,6 +111,7 @@ describe("runInstall (no interactivo)", () => {
 
   test("mensaje de env var faltante contiene [aviso] y el configPath", async () => {
     const originalKey = process.env.ANTHROPIC_API_KEY;
+    // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
     delete process.env.ANTHROPIC_API_KEY;
     const logs: string[] = [];
     const originalLog = console.log;
@@ -122,6 +123,7 @@ describe("runInstall (no interactivo)", () => {
       );
     } finally {
       console.log = originalLog;
+      // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
       if (originalKey === undefined) delete process.env.ANTHROPIC_API_KEY;
       else process.env.ANTHROPIC_API_KEY = originalKey;
     }

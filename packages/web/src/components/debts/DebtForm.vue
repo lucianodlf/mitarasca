@@ -303,9 +303,9 @@ function onConfirmDelete() {
 
         <div class="grid grid-cols-2 gap-3">
           <div class="grid gap-1.5">
-            <Label>Dirección</Label>
+            <Label for="df-direccion">Dirección</Label>
             <Select v-model="direccion">
-              <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="df-direccion" class="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="yo_debo">Yo debo</SelectItem>
                 <SelectItem value="me_deben">Me deben</SelectItem>
@@ -372,9 +372,9 @@ function onConfirmDelete() {
             <Input id="df-fecha-inicio" v-model="fechaInicio" type="date" required />
           </div>
           <div class="grid gap-1.5">
-            <Label>Frecuencia</Label>
+            <Label for="df-frecuencia">Frecuencia</Label>
             <Select v-model="frecuencia">
-              <SelectTrigger class="w-full"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="df-frecuencia" class="w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="mensual">Mensual</SelectItem>
                 <SelectItem value="dias">Cada N días</SelectItem>
@@ -402,18 +402,18 @@ function onConfirmDelete() {
 
         <div class="grid grid-cols-2 gap-3">
           <div class="grid gap-1.5">
-            <Label>Concepto</Label>
+            <Label for="df-concepto">Concepto</Label>
             <Select v-model="conceptoId">
-              <SelectTrigger class="w-full"><SelectValue placeholder="Concepto" /></SelectTrigger>
+              <SelectTrigger id="df-concepto" class="w-full"><SelectValue placeholder="Concepto" /></SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="c in conceptos" :key="c.id" :value="String(c.id)">{{ c.nombre }}</SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div class="grid gap-1.5">
-            <Label>Medio de pago</Label>
+            <Label for="df-medio-de-pago">Medio de pago</Label>
             <Select v-model="medioPagoId">
-              <SelectTrigger class="w-full"><SelectValue placeholder="Medio de pago" /></SelectTrigger>
+              <SelectTrigger id="df-medio-de-pago" class="w-full"><SelectValue placeholder="Medio de pago" /></SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="mp in mediosPago" :key="mp.id" :value="String(mp.id)">{{ mp.nombre }}</SelectItem>
               </SelectContent>
@@ -422,16 +422,16 @@ function onConfirmDelete() {
         </div>
 
         <div class="grid gap-1.5">
-          <Label>Persona/Entidad</Label>
+          <Label for="df-persona-entidad">Persona/Entidad</Label>
           <Select v-model="personaId">
-            <SelectTrigger class="w-full"><SelectValue placeholder="Sin persona" /></SelectTrigger>
+            <SelectTrigger id="df-persona-entidad" class="w-full"><SelectValue placeholder="Sin persona" /></SelectTrigger>
             <SelectContent>
               <SelectItem v-for="p in personas" :key="p.id" :value="String(p.id)">{{ p.nombre }}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
+        <p v-if="error" role="alert" class="text-sm text-destructive">{{ error }}</p>
 
         <DialogFooter class="justify-between sm:justify-between">
           <Button

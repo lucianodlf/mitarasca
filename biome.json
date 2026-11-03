@@ -28,7 +28,27 @@
       "semicolons": "always"
     }
   },
+  "overrides": [
+    {
+      "include": ["**/*.astro"],
+      "linter": {
+        "rules": {
+          "correctness": { "noUnusedVariables": "off", "noUnusedImports": "off" }
+        }
+      }
+    }
+  ],
   "files": {
-    "ignore": ["node_modules", "dist", "drizzle", "*.d.ts", "**/*.vue"]
+    "ignore": [
+      "node_modules",
+      "dist",
+      "drizzle",
+      "*.d.ts",
+      "**/*.vue",
+      ".astro",
+      ".claude/settings*.json",
+      "_wp/**",
+      "data/**"
+    ]
   }
 }

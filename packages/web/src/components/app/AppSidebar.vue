@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from "vue";
-import { CreditCard, LayoutDashboard, Tag, Users } from "lucide-vue-next";
+import { CreditCard, LayoutDashboard, Tag, Users } from "@lucide/vue";
 import { RouterLink } from "vue-router";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/app/Logo.vue";
@@ -43,9 +43,10 @@ const groups: NavGroup[] = [
 </script>
 
 <template>
-  <aside
+  <nav
+    aria-label="Principal"
     :class="cn(
-      'flex flex-col gap-0.5 border-r border-border bg-card p-2 transition-[width] duration-200',
+      'flex h-full flex-col gap-0.5 border-r border-border bg-card p-2 transition-[width] duration-200',
       collapsed ? 'w-14' : 'w-54',
     )"
   >
@@ -55,7 +56,7 @@ const groups: NavGroup[] = [
     </div>
 
     <template v-for="group in groups" :key="group.label">
-      <div v-if="!collapsed" class="px-2.5 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+      <div v-if="!collapsed" class="px-2.5 pb-1 pt-3 text-label font-semibold uppercase tracking-wider text-muted-foreground">
         {{ group.label }}
       </div>
       <RouterLink
@@ -71,11 +72,11 @@ const groups: NavGroup[] = [
           item.disabled && 'pointer-events-none opacity-40',
           collapsed && 'justify-center',
         )"
-        active-class="bg-primary/15 text-primary [&_svg]:text-primary"
+        active-class="bg-primary/10 text-primary [&_svg]:text-primary"
       >
         <component :is="item.icon" class="size-4 shrink-0 text-muted-foreground" />
         <span v-if="!collapsed">{{ item.label }}</span>
       </RouterLink>
     </template>
-  </aside>
+  </nav>
 </template>

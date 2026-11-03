@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Eye, EyeOff } from "lucide-vue-next";
+import { Eye, EyeOff } from "@lucide/vue";
 import { computed, onMounted, ref, watch } from "vue";
 import {
   AlertDialog,
@@ -364,9 +364,9 @@ async function persistShares(
         <div class="grid gap-4">
           <div class="grid grid-cols-2 gap-4">
             <div class="grid gap-1.5">
-              <Label>Tipo</Label>
+              <Label for="mf-tipo">Tipo</Label>
               <Select v-model="tipoId">
-                <SelectTrigger class="w-full"><SelectValue placeholder="Tipo" /></SelectTrigger>
+                <SelectTrigger id="mf-tipo" class="w-full"><SelectValue placeholder="Tipo" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem v-for="t in tipos" :key="t.id" :value="String(t.id)">{{ t.nombre }}</SelectItem>
                 </SelectContent>
@@ -385,9 +385,9 @@ async function persistShares(
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div class="grid gap-1.5">
-              <Label>Estado</Label>
+              <Label for="mf-estado">Estado</Label>
               <Select v-model="estadoId">
-                <SelectTrigger class="w-full"><SelectValue placeholder="Estado" /></SelectTrigger>
+                <SelectTrigger id="mf-estado" class="w-full"><SelectValue placeholder="Estado" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem v-for="e in estados" :key="e.id" :value="String(e.id)">{{ e.nombre }}</SelectItem>
                 </SelectContent>
@@ -408,9 +408,9 @@ async function persistShares(
 
         <div class="grid grid-cols-2 gap-3">
           <div class="grid gap-1.5">
-            <Label>Prorrateo</Label>
+            <Label for="mf-prorrateo">Prorrateo</Label>
             <Select v-model="reglaOp">
-              <SelectTrigger class="w-full">
+              <SelectTrigger id="mf-prorrateo" class="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -482,7 +482,7 @@ async function persistShares(
           <Input id="mf-obs" v-model="observacion" placeholder="Opcional" />
         </div>
 
-        <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
+        <p v-if="error" role="alert" class="text-sm text-destructive">{{ error }}</p>
 
         <p v-if="props.movement?.imported_at" class="text-muted-foreground text-xs">
           Importado el {{ formatImportedAt(props.movement.imported_at) }}

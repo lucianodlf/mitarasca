@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Archive, ArchiveRestore, Pencil, Plus } from "lucide-vue-next";
+import { Archive, ArchiveRestore, Pencil, Plus } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 import { toast } from "vue-sonner";
 import {
@@ -135,7 +135,7 @@ async function onReactivate(t: TagOption) {
       </Button>
     </header>
 
-    <div v-if="error" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+    <div v-if="error" role="alert" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
       {{ error }}
     </div>
 
@@ -163,7 +163,7 @@ async function onReactivate(t: TagOption) {
         </TableHeader>
         <TableBody>
           <TableRow v-if="loading">
-            <TableCell :colspan="6" class="text-center text-sm text-muted-foreground">Cargando…</TableCell>
+            <TableCell :colspan="6" class="text-center text-sm text-muted-foreground"><span role="status">Cargando…</span></TableCell>
           </TableRow>
           <TableEmpty v-else-if="filteredItems.length === 0" :colspan="6">
             <EmptyState

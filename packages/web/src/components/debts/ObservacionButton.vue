@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { StickyNote } from "lucide-vue-next";
+import { StickyNote } from "@lucide/vue";
 import { nextTick, ref } from "vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,7 @@ function cancel() {
     class="h-7 w-48 text-xs"
     maxlength="150"
     :placeholder="label"
+    :aria-label="`Observación de ${label}`"
     @keydown.enter="save"
     @keydown.escape="cancel"
     @blur="save"

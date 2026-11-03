@@ -20,7 +20,7 @@ const toneClass = {
 
 <template>
   <div class="rounded-xl border border-border bg-card p-3.5">
-    <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+    <div class="flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
       <component :is="icon" class="size-3.5" /> {{ label }}
     </div>
     <div class="num mt-1.5 text-2xl font-semibold" :class="toneClass[tone]">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AlertTriangle, Link2, Pencil } from "lucide-vue-next";
+import { AlertTriangle, Link2, Pencil } from "@lucide/vue";
 import { computed } from "vue";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -69,7 +69,7 @@ function diverge(installment: Installment): boolean {
       </TableHeader>
       <TableBody>
         <TableRow v-if="loading">
-          <TableCell colspan="5" class="text-center text-sm text-muted-foreground">Cargando…</TableCell>
+          <TableCell colspan="5" class="text-center text-sm text-muted-foreground"><span role="status">Cargando…</span></TableCell>
         </TableRow>
         <TableRow v-else-if="installments.length === 0">
           <TableCell colspan="5" class="text-center text-sm text-muted-foreground">Sin cuotas.</TableCell>

@@ -85,8 +85,7 @@ async function resolveExistingConfigGuard(
   if (flags.yes) {
     if (!flags.force) {
       throw new Error(
-        `Ya existe un config en ${configPath}. Instalación no interactiva (--yes) requiere --force ` +
-          `para autorizar backup + sobreescritura.`
+        `Ya existe un config en ${configPath}. Instalación no interactiva (--yes) requiere --force para autorizar backup + sobreescritura.`
       );
     }
     return "overwrite";
@@ -119,6 +118,7 @@ export async function runInstall(
   const originalHome = process.env.HOME;
   const originalXdg = process.env.XDG_CONFIG_HOME;
   process.env.HOME = opts.home;
+  // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
   delete process.env.XDG_CONFIG_HOME;
 
   try {
@@ -142,10 +142,7 @@ export async function runInstall(
     const envVar = PROVIDER_ENV_VAR[provider];
     if (!process.env[envVar]) {
       console.log(
-        `\n[aviso] No se encontró ${envVar} en el entorno. La instalación continúa igual; agregá ` +
-          `esta línea a tu shell rc cuando quieras activar la extracción con IA:\n` +
-          `  export ${envVar}="tu-api-key"\n` +
-          `(o cargala directamente en ${configPath} más adelante)\n`
+        `\n[aviso] No se encontró ${envVar} en el entorno. La instalación continúa igual; agregá esta línea a tu shell rc cuando quieras activar la extracción con IA:\n  export ${envVar}="tu-api-key"\n(o cargala directamente en ${configPath} más adelante)\n`
       );
     }
 
@@ -209,8 +206,10 @@ export async function runInstall(
 
     return { configPath, skillPaths };
   } finally {
+    // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
     if (originalHome === undefined) delete process.env.HOME;
     else process.env.HOME = originalHome;
+    // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
     if (originalXdg === undefined) delete process.env.XDG_CONFIG_HOME;
     else process.env.XDG_CONFIG_HOME = originalXdg;
   }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Search, X, ChevronLeft, ChevronRight, Plus, Eraser } from "lucide-vue-next";
+import { Search, X, ChevronLeft, ChevronRight, Plus, Eraser } from "@lucide/vue";
 import { computed } from "vue";
 import { Button } from "@/components/ui/button";
 import TagsMultiSelect from "@/components/app/TagsMultiSelect.vue";
@@ -122,12 +122,13 @@ function clearFilters() {
           :value="detailQuery"
           type="text"
           placeholder="Buscar por detalle..."
-          class="h-8 w-48 rounded-md border border-border bg-background pl-7 pr-7 text-sm outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground"
+          aria-label="Buscar por detalle"
+          class="h-8 w-48 rounded-md border border-border bg-background pl-7 pr-7 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring placeholder:text-muted-foreground"
           @input="emit('update:detailQuery', ($event.target as HTMLInputElement).value)"
         />
         <button
           v-if="detailQuery"
-          class="absolute right-1.5 rounded p-0.5 text-muted-foreground hover:text-foreground"
+          class="absolute right-0.5 grid size-7 place-items-center rounded text-muted-foreground hover:text-foreground pointer-coarse:size-8"
           aria-label="Limpiar búsqueda"
           @click="emit('update:detailQuery', '')"
         >

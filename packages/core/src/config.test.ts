@@ -21,14 +21,17 @@ beforeEach(() => {
   originalHome = process.env.HOME;
   originalXdg = process.env.XDG_CONFIG_HOME;
   process.env.HOME = tmpHome;
+  // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
   delete process.env.XDG_CONFIG_HOME;
 });
 
 afterEach(() => {
   rmSync(tmpHome, { recursive: true, force: true });
   rmSync(tmpProject, { recursive: true, force: true });
+  // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
   if (originalHome === undefined) delete process.env.HOME;
   else process.env.HOME = originalHome;
+  // biome-ignore lint/performance/noDelete: asignar undefined deja el string "undefined" en process.env
   if (originalXdg === undefined) delete process.env.XDG_CONFIG_HOME;
   else process.env.XDG_CONFIG_HOME = originalXdg;
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { MoreVertical } from "lucide-vue-next";
+import { MoreVertical } from "@lucide/vue";
 import IconIngreso from "@/components/icons/IconIngreso.vue";
 import IconEgreso from "@/components/icons/IconEgreso.vue";
 import IconBalance from "@/components/icons/IconBalance.vue";
@@ -310,7 +310,7 @@ async function onConfirmDelete() {
       </DropdownMenu>
     </header>
 
-    <div v-if="error" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+    <div v-if="error" role="alert" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
       {{ error }}
     </div>
 

@@ -3,7 +3,10 @@ import { makeBalanceRepo } from "./balance.repository.js";
 
 type Repo = ReturnType<typeof makeBalanceRepo>;
 let repo: Repo | undefined;
-const getRepo = (): Repo => (repo ??= makeBalanceRepo(getDb()));
+const getRepo = (): Repo => {
+  if (!repo) repo = makeBalanceRepo(getDb());
+  return repo;
+};
 
 export const summarizeByYear: Repo["summarizeByYear"] = (...args) =>
   getRepo().summarizeByYear(...args);

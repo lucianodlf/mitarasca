@@ -26,7 +26,10 @@
 - [Capturas](#capturas)
 - [Qué hace hoy](#qué-hace-hoy)
 - [Quickstart](#quickstart)
-- [Uso](#uso)
+- [Modo desarrollo](#modo-desarrollo)
+- [Docker](#docker)
+- [MCP](#mcp)
+- [Configuración avanzada](#configuración-avanzada)
 - [Arquitectura](#arquitectura)
 - [Estado del proyecto](#estado-del-proyecto)
 - [Contribuir](#contribuir)
@@ -74,44 +77,56 @@ Detalle de cada feature, su madurez y sus limitaciones en
 
 ## Quickstart
 
-Requiere [Bun](https://bun.sh) (probado con 1.4.4).
+Instalación simple en Linux. Requiere `git`; si falta [Bun](https://bun.sh), el script
+ofrece instalarlo.
 
 ```bash
 git clone https://github.com/lucianodlf/mitarasca.git
 cd mitarasca
-bun install
-bun run db:seed:demo      # genera ./data/demo.db con datos inventados
+./scripts/install.sh
 ```
 
-Levantar la API y la web contra la demo, en dos terminales desde la raíz del repo:
+Sin clonar a mano (clona en `~/.local/share/mitarasca`):
 
 ```bash
-DB_PATH=$PWD/data/demo.db bun run dev:api   # API en http://localhost:3787
-bun run dev:web                             # web en http://localhost:5173
+curl -fsSL https://raw.githubusercontent.com/lucianodlf/mitarasca/main/scripts/install.sh | bash
 ```
 
-Abrir http://localhost:5173.
-
-Para empezar con una base vacía (migraciones y tags base en `./data/mitarasca.db`):
+El script instala las dependencias, buildea la web, crea tu base vacía y deja el comando
+`mitarasca` en `~/.local/bin`. Volver a correrlo actualiza. Después:
 
 ```bash
-bun run db:init
-bun run dev:api
-bun run dev:web
+mitarasca demo      # siembra la base de demo (datos inventados) y abre la web
+mitarasca ui        # abre la web con tu base (alias: mitarasca web)
+mitarasca --help    # todos los comandos
 ```
 
-Atajos: `bun run dev:demo` y `bun run dev` levantan la API y la web con un solo comando.
-Con algunas versiones de Bun solo arranca la API; en ese caso, usar las dos terminales.
+Cualquier comando acepta `--demo` para trabajar sobre la demo sin tocar tu base
+(`mitarasca balance --demo`). Para desinstalar, `mitarasca uninstall`: quita el comando del
+PATH, no borra datos y te muestra dónde quedaron, con el `rm -rf` para borrarlos.
+
+Próximamente: paquete en npm. macOS y Windows todavía no tienen instalador.
 
 <p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
-## Uso
+## Modo desarrollo
+
+Desde un clon, con `bun install` hecho:
 
 ```bash
-# CLI desde el repo (usa la base de .mitarasca/config.toml, o DB_PATH si está seteado)
-bun run --cwd packages/cli dev -- --help
-bun run --cwd packages/cli dev -- movimientos --mes 2026-10
-bun run --cwd packages/cli dev -- balance --year 2026
+bun run db:seed:demo      # genera ./data/demo.db con datos inventados
+bun run dev:demo          # API (http://localhost:3787) y web (http://localhost:5173) sobre la demo
+
+bun run db:init           # crea ./data/mitarasca.db vacía (migraciones y tags base)
+bun run dev               # API y web sobre tu base
+```
+
+Con algunas versiones de Bun `bun run dev` solo arranca la API; en ese caso, usar dos
+terminales con `bun run dev:api` y `bun run dev:web`.
+
+```bash
+# CLI desde el repo, sin instalar
+bun packages/cli/src/index.ts --help
 
 # Typecheck, lint y tests
 bun run typecheck
@@ -119,11 +134,68 @@ bun run lint
 cd packages/core && bun test
 ```
 
-Variables de entorno: `DB_PATH` (si se usa, con ruta absoluta) y `API_PORT` (default `3787`).
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 
-Guías de instalación e integración, con el nivel de madurez de cada una:
+## Docker
 
-- [CLI](./docs/guias/cli.md): desde el código fuente, con `bun link` o un alias.
+La imagen trae la web y la API, sin la CLI. Los datos van en `./data-docker/` (nunca en
+`./data/`). Crear la carpeta con tu usuario antes del primer uso: si la crea Docker queda de
+root y la imagen corre como uid 1000.
+
+```bash
+mkdir -p data-docker
+
+# Base vacía
+docker compose run --rm api bun packages/core/scripts/init-db.ts
+docker compose up --build
+
+# Demo
+docker compose run --rm api bun packages/core/scripts/seed-demo.ts
+MITARASCA_DEMO=1 docker compose up --build
+```
+
+La web queda en http://localhost:3787.
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+## MCP
+
+`mitarasca mcp` levanta el servidor MCP por stdio (18 tools; 10 escriben). Se configura a
+mano en el cliente. Con Claude Code:
+
+```bash
+claude mcp add -s user mitarasca -- mitarasca mcp --demo   # todos tus proyectos, sobre la demo
+claude mcp add -s project mitarasca -- mitarasca mcp       # solo este proyecto (.mcp.json), tu base
+```
+
+Claude Desktop, otros clientes y las limitaciones en la [guía del MCP](./docs/guias/mcp.md).
+
+<p align="right">(<a href="#readme-top">volver arriba</a>)</p>
+
+## Configuración avanzada
+
+La base se resuelve en este orden:
+
+1. `DB_PATH`, si está seteado (usar ruta absoluta).
+2. `--demo` o `MITARASCA_DEMO=1`: `data/demo.db` del clon.
+3. `db_path` del `.mitarasca/config.toml` más cercano subiendo desde el directorio actual.
+4. `db_path` de la config global, `~/.config/mitarasca/config.toml`.
+5. `data/mitarasca.db` del clon.
+
+Solo `mitarasca init` y `mitarasca demo` crean la base: el resto de los comandos, la API y el
+MCP avisan qué correr si no existe.
+
+```bash
+mitarasca config set db_path /ruta/absoluta/a/mitarasca.db   # config global
+mitarasca config path                                         # qué archivos lee
+mitarasca ui --port 4000                                      # otro puerto (la API sola usa API_PORT)
+```
+
+`MITARASCA_DEBUG=1` muestra el stack completo de los errores de la CLI.
+
+Guías, con el nivel de madurez de cada parte:
+
+- [CLI](./docs/guias/cli.md)
 - [MCP](./docs/guias/mcp.md): Claude Code y Claude Desktop.
 - [Skill `importar-movimientos`](./docs/guias/importar-movimientos.md) (experimental).
 
@@ -154,7 +226,8 @@ principal de uso. El CLI y el MCP cubren lectura y escritura de movimientos y de
 algunas partes experimentales. La importación desde capturas está ajustada a un caso de uso
 propio. El estado de cada parte está en [`docs/features.md`](./docs/features.md).
 
-Todavía no hay paquete publicado en npm ni instalador: se usa desde un clon del repo.
+Se instala desde un clon del repo con `scripts/install.sh` (solo Linux). Todavía no hay
+paquete publicado en npm.
 
 <p align="right">(<a href="#readme-top">volver arriba</a>)</p>
 

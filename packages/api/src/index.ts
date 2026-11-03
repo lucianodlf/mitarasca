@@ -1,8 +1,16 @@
 import { trpcServer } from "@hono/trpc-server";
+import { assertDbExists } from "@mitarasca/core";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createContext } from "./trpc/context.js";
 import { appRouter } from "./trpc/router.js";
+
+// La API no crea la DB: avisa y sigue; cada request devuelve el error de getDb().
+try {
+  assertDbExists();
+} catch (err) {
+  console.warn(`[mitarasca] ${(err as Error).message}`);
+}
 
 const app = new Hono();
 

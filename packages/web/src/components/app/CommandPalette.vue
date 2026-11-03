@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CreditCard, LayoutDashboard, LineChart, Plus, Search } from "lucide-vue-next";
+import { CreditCard, LayoutDashboard, LineChart, Plus, Search } from "@lucide/vue";
 import IconIngreso from "@/components/icons/IconIngreso.vue";
 import IconEgreso from "@/components/icons/IconEgreso.vue";
 import { computed, ref, watch } from "vue";
@@ -129,7 +129,7 @@ const crossPath = computed(() => (effectiveDir.value === "out" ? "/egresos" : "/
             <span class="text-xs font-medium text-muted-foreground">
               {{ contextLabel ?? "Movimientos" }}
             </span>
-            <span class="text-xs text-muted-foreground/60">{{ results.length }} resultado{{ results.length !== 1 ? 's' : '' }}</span>
+            <span class="text-xs text-muted-foreground">{{ results.length }} resultado{{ results.length !== 1 ? 's' : '' }}</span>
           </div>
 
           <div v-if="results.length === 0" class="py-6 text-center text-sm text-muted-foreground">
@@ -162,14 +162,14 @@ const crossPath = computed(() => (effectiveDir.value === "out" ? "/egresos" : "/
               <span
                 v-for="t in m.tags"
                 :key="t.id"
-                class="rounded px-1 py-px text-[10px] font-medium"
+                class="rounded px-1 py-px text-label font-medium"
                 :style="tagBadgeStyle(t.color)"
               >{{ t.nombre }}</span>
             </div>
           </button>
 
           <!-- Hint de sintaxis -->
-          <div class="border-t px-3 py-1.5 text-[10px] text-muted-foreground/50">
+          <div class="border-t px-3 py-1.5 text-label text-muted-foreground">
             tags:nombre &nbsp;·&nbsp; estado:pagado &nbsp;·&nbsp; tipo:fijo &nbsp;·&nbsp; ing:/egr: para cambiar contexto
           </div>
         </template>

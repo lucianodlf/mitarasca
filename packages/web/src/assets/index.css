@@ -1,3 +1,11 @@
+@import "@fontsource/manrope/latin-400.css";
+@import "@fontsource/manrope/latin-500.css";
+@import "@fontsource/manrope/latin-600.css";
+@import "@fontsource/manrope/latin-700.css";
+@import "@fontsource/lora/latin-700.css";
+@import "@fontsource/fira-code/latin-400.css";
+@import "@fontsource/fira-code/latin-500.css";
+@import "@fontsource/fira-code/latin-600.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -17,7 +25,7 @@
   --card-foreground: oklch(24% 0.02 260);
   --popover: oklch(99% 0.006 95);
   --popover-foreground: oklch(24% 0.02 260);
-  --primary: oklch(55% 0.1 155);
+  --primary: oklch(50% 0.1 155);
   --primary-foreground: oklch(98% 0.01 155);
   --secondary: oklch(94% 0.014 105);
   --secondary-foreground: oklch(30% 0.03 105);
@@ -25,18 +33,18 @@
   --muted-foreground: oklch(46% 0.02 260);
   --accent: oklch(90% 0.035 205);
   --accent-foreground: oklch(30% 0.05 205);
-  --destructive: oklch(56% 0.11 55);
+  --destructive: oklch(52% 0.11 55);
   --destructive-foreground: oklch(98% 0.02 55);
   --border: oklch(88% 0.014 95);
-  --input: oklch(88% 0.014 95);
-  --ring: oklch(72% 0.11 155);
+  --input: oklch(62% 0.02 95);
+  --ring: oklch(55% 0.09 195);
 
-  /* extensiones financieras */
-  --cta: oklch(55% 0.1 155);
+  /* extensiones financieras. En claro, primary/pos/neg/destructive son tokens de texto y de relleno a la vez: L bajo para AA (4.5:1) sobre fondo y *-soft */
+  --cta: oklch(50% 0.1 155);
   --cta-foreground: oklch(98% 0.01 155);
-  --pos: oklch(55% 0.1 155);
+  --pos: oklch(44% 0.1 155);
   --pos-foreground: oklch(98% 0.01 155);
-  --neg: oklch(56% 0.11 55);
+  --neg: oklch(44% 0.11 55);
   --neg-foreground: oklch(98% 0.02 55);
   --pos-soft: oklch(90% 0.05 155);
   --neg-soft: oklch(92% 0.05 55);
@@ -73,7 +81,7 @@
   --destructive: oklch(75% 0.11 55);
   --destructive-foreground: oklch(19% 0.03 55);
   --border: oklch(33% 0.02 250);
-  --input: oklch(33% 0.02 250);
+  --input: oklch(55% 0.02 250);
   --ring: oklch(76% 0.09 195);
 
   --cta: oklch(72% 0.11 155);
@@ -145,9 +153,37 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
+  /* paso "label" de DESIGN.md (0.8rem); reemplaza los text-[10px]/text-[11px] sueltos */
+  --text-label: 0.8rem;
+  --text-label--line-height: 1.25;
+
   --font-display: "Lora", serif;
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Fira Code", ui-monospace, monospace;
+}
+
+/* Movimiento reducido: se quita el desplazamiento, la escala y el desenfoque de las
+   entradas y salidas (tw-animate-css). Los fundidos y cambios de color se conservan
+   porque confirman el estado. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    --tw-enter-translate-x: 0 !important;
+    --tw-enter-translate-y: 0 !important;
+    --tw-enter-scale: 1 !important;
+    --tw-enter-rotate: 0 !important;
+    --tw-enter-blur: 0 !important;
+    --tw-exit-translate-x: 0 !important;
+    --tw-exit-translate-y: 0 !important;
+    --tw-exit-scale: 1 !important;
+    --tw-exit-rotate: 0 !important;
+    --tw-exit-blur: 0 !important;
+    scroll-behavior: auto !important;
+  }
+  [class*="transition-[width]"] {
+    transition-duration: 0s !important;
+  }
 }
 
 @layer base {

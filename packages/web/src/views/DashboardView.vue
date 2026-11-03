@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CreditCard } from "lucide-vue-next";
+import { CreditCard } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { useBalance } from "@/composables/useBalance";
@@ -51,13 +51,13 @@ const monthLabel = new Intl.DateTimeFormat("es-AR", { month: "long", year: "nume
       <p class="text-sm capitalize text-muted-foreground">{{ monthLabel }} · proyectado</p>
     </header>
 
-    <div v-if="summaryError" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+    <div v-if="summaryError" role="alert" class="mb-4 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
       {{ summaryError }}
     </div>
 
     <section class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
       <div class="rounded-xl border border-border bg-card p-3.5">
-        <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div class="flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
           <IconIngreso class="size-3.5" /> Ingresos del mes
         </div>
         <div class="num mt-1.5 text-2xl font-semibold text-pos">
@@ -65,7 +65,7 @@ const monthLabel = new Intl.DateTimeFormat("es-AR", { month: "long", year: "nume
         </div>
       </div>
       <div class="rounded-xl border border-border bg-card p-3.5">
-        <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div class="flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
           <IconEgreso class="size-3.5" /> Egresos del mes
         </div>
         <div class="num mt-1.5 text-2xl font-semibold text-neg">
@@ -73,7 +73,7 @@ const monthLabel = new Intl.DateTimeFormat("es-AR", { month: "long", year: "nume
         </div>
       </div>
       <div class="rounded-xl border border-border bg-card p-3.5">
-        <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div class="flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
           <IconBalance class="size-3.5" /> Balance del mes
         </div>
         <div class="num mt-1.5 text-2xl font-semibold">
@@ -87,25 +87,25 @@ const monthLabel = new Intl.DateTimeFormat("es-AR", { month: "long", year: "nume
         to="/balance"
         class="rounded-xl border border-border bg-card p-3.5 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <div class="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div class="mb-2 flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
           <IconBalance class="size-3.5" /> Balance {{ yearSummary?.year ?? year }}
         </div>
-        <div v-if="yearError" class="text-sm text-destructive">{{ yearError }}</div>
+        <div v-if="yearError" role="alert" class="text-sm text-destructive">{{ yearError }}</div>
         <div v-else class="grid grid-cols-3 gap-2 text-sm">
           <div>
-            <div class="text-[11px] text-muted-foreground">Ingresos</div>
+            <div class="text-label text-muted-foreground">Ingresos</div>
             <div class="num font-semibold text-pos">
               {{ yearLoading ? "…" : formatMoney(yearSummary?.ingresos ?? 0) }}
             </div>
           </div>
           <div>
-            <div class="text-[11px] text-muted-foreground">Egresos</div>
+            <div class="text-label text-muted-foreground">Egresos</div>
             <div class="num font-semibold text-neg">
               {{ yearLoading ? "…" : formatMoney(yearSummary?.egresos ?? 0) }}
             </div>
           </div>
           <div>
-            <div class="text-[11px] text-muted-foreground">Balance</div>
+            <div class="text-label text-muted-foreground">Balance</div>
             <div class="num font-semibold">
               {{ yearLoading ? "…" : formatMoney(yearSummary?.balance ?? 0) }}
             </div>
@@ -117,19 +117,19 @@ const monthLabel = new Intl.DateTimeFormat("es-AR", { month: "long", year: "nume
         to="/deudas"
         class="rounded-xl border border-border bg-card p-3.5 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <div class="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <div class="mb-2 flex items-center gap-1.5 text-label font-semibold uppercase tracking-wide text-muted-foreground">
           <CreditCard class="size-3.5 text-primary" /> Deudas
         </div>
-        <div v-if="debtsError" class="text-sm text-destructive">{{ debtsError }}</div>
+        <div v-if="debtsError" role="alert" class="text-sm text-destructive">{{ debtsError }}</div>
         <div v-else class="grid grid-cols-2 gap-2 text-sm">
           <div>
-            <div class="text-[11px] text-muted-foreground">Yo debo</div>
+            <div class="text-label text-muted-foreground">Yo debo</div>
             <div class="num font-semibold text-neg">
               {{ debtsLoading ? "…" : formatMoney(debtTotals.yoDebo) }}
             </div>
           </div>
           <div>
-            <div class="text-[11px] text-muted-foreground">Me deben</div>
+            <div class="text-label text-muted-foreground">Me deben</div>
             <div class="num font-semibold text-pos">
               {{ debtsLoading ? "…" : formatMoney(debtTotals.meDeben) }}
             </div>

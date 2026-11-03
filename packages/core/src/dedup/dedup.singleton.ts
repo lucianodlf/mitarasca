@@ -3,7 +3,10 @@ import { makeDedupRepo } from "./dedup.repository.js";
 
 type Repo = ReturnType<typeof makeDedupRepo>;
 let repo: Repo | undefined;
-const getRepo = (): Repo => (repo ??= makeDedupRepo(getDb()));
+const getRepo = (): Repo => {
+  if (!repo) repo = makeDedupRepo(getDb());
+  return repo;
+};
 
 export const identityKey: Repo["identityKey"] = (...args) => getRepo().identityKey(...args);
 export const findExactInDb: Repo["findExactInDb"] = (...args) => getRepo().findExactInDb(...args);

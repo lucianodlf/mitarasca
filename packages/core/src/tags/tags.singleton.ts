@@ -3,7 +3,10 @@ import { makeTagsRepo } from "./tags.repository.js";
 
 type Repo = ReturnType<typeof makeTagsRepo>;
 let repo: Repo | undefined;
-const getRepo = (): Repo => (repo ??= makeTagsRepo(getDb()));
+const getRepo = (): Repo => {
+  if (!repo) repo = makeTagsRepo(getDb());
+  return repo;
+};
 
 export const createTag: Repo["createTag"] = (...args) => getRepo().createTag(...args);
 export const getTagById: Repo["getTagById"] = (...args) => getRepo().getTagById(...args);
