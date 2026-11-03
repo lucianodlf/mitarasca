@@ -6,6 +6,7 @@ import {
   parseManifest,
   parseReplacements,
   parseVersion,
+  staleInDest,
   symlinkEscapes,
 } from "./public-sync";
 
@@ -87,5 +88,21 @@ describe("parseReplacements y applyReplacements", () => {
   test("rechaza una línea sin separador o con búsqueda vacía", () => {
     expect(() => parseReplacements("sin separador")).toThrow();
     expect(() => parseReplacements(" => algo")).toThrow();
+  });
+});
+
+describe("staleInDest", () => {
+  test("marca lo que ya no está en el origen, también un archivo suelto fuera del manifest", () => {
+    const source = new Set(["README.md", "packages/core/a.ts"]);
+    const dest = [
+      "README.md",
+      "packages/core/a.ts",
+      "packages/core/old.ts",
+      "scripts/dev-test-install.sh",
+    ];
+    expect(staleInDest(dest, source)).toEqual([
+      "packages/core/old.ts",
+      "scripts/dev-test-install.sh",
+    ]);
   });
 });

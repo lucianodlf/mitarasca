@@ -5,12 +5,14 @@
 // 0. Falla si el destino tiene cambios sin commitear o si hay cambios sin commitear en las rutas
 //    del manifest del origen.
 // 1. Copia al destino los archivos trackeados por git en las rutas del manifest y borra del
-//    destino los que ya no existen dentro de esas rutas.
+//    destino todo archivo que ya no esté en el origen (incluidos archivos sueltos quitados del
+//    manifest). Si algo falla después de tocar el destino, imprime la causa y lo restaura.
 // 2. Aplica las transformaciones (TRANSFORMS) y los reemplazos de texto de --replacements.
 // 3. Falla si en el destino queda alguna ruta fuera del manifest o algún archivo copiado que el
 //    .gitignore del destino ignoraría.
 // 4. Corre gitleaks sobre el destino y falla si encuentra algo.
-// 5. Hace commit `release vX.Y.Z` en el destino solo si hay cambios. No pushea.
+// 5. Hace commit `release vX.Y.Z` en el destino solo si hay cambios, imprime su diff (--stat) para
+//    revisarlo antes del push. No pushea.
 import {
   chmodSync,
   copyFileSync,
@@ -104,6 +106,11 @@ export function symlinkEscapes(root: string, linkPath: string, target: string): 
   return resolved !== root && !resolved.startsWith(`${root}/`);
 }
 
+// El destino es un espejo del origen: lo que no viene del origen sobra, esté o no en el manifest.
+export function staleInDest(destFiles: string[], sourceFiles: Set<string>): string[] {
+  return destFiles.filter((p) => !sourceFiles.has(p));
+}
+
 export function parseVersion(value: string): string {
   const version = value.replace(/^v/, "");
   if (!/^\d+\.\d+\.\d+$/.test(version)) {
@@ -112,8 +119,15 @@ export function parseVersion(value: string): string {
   return version;
 }
 
+// Se define cuando el script empieza a tocar el destino; fail() lo deja como estaba (HEAD).
+let restoreDest: (() => void) | undefined;
+
 function fail(message: string): never {
   console.error(`public-sync: ${message}`);
+  if (restoreDest) {
+    restoreDest();
+    console.error("public-sync: destino restaurado, se puede volver a correr");
+  }
   process.exit(1);
 }
 
@@ -228,10 +242,25 @@ async function main(): Promise<void> {
     }
   }
 
-  for (const path of await gitFiles(dest, destListArgs)) {
-    if (isInManifest(path, entries) && !sourceSet.has(path))
-      rmSync(join(dest, path), { force: true });
+  const cliVersion = JSON.parse(
+    readFileSync(join(source, "packages/cli/package.json"), "utf8")
+  ).version;
+  if (cliVersion !== version) {
+    fail(`packages/cli/package.json tiene version ${cliVersion} y --version es ${version}`);
   }
+
+  restoreDest = () => {
+    for (const cmd of [
+      ["reset", "--hard", "-q"],
+      ["clean", "-fdq"],
+    ]) {
+      Bun.spawnSync(["git", "-C", dest, ...cmd]);
+    }
+  };
+  // git rm (no rmSync): ls-files --cached seguiría listando el archivo borrado y lo marcaría fuera del manifest.
+  const stale = staleInDest(await gitFiles(dest, destListArgs), sourceSet);
+  if (stale.length > 0)
+    await Bun.$`git --literal-pathspecs -C ${dest} rm -q -f --ignore-unmatch -- ${stale}`;
   for (const path of sourceSet) copyEntry(source, dest, path);
 
   const transforms = replacements ? [...TRANSFORMS, replaceInFiles(replacements)] : TRANSFORMS;
@@ -271,6 +300,8 @@ async function main(): Promise<void> {
   }
   await Bun.$`git -C ${dest} commit -q -m ${`release v${version}`}`;
   console.log(`public-sync: commit "release v${version}" en ${dest} (sin push)`);
+  // Revisión previa al push: muestra qué agrega, cambia y borra el commit (los borrados salen como "delete mode").
+  await Bun.$`git -C ${dest} show --stat --summary --format=%h\ %s HEAD`;
 }
 
 if (import.meta.main) await main();
