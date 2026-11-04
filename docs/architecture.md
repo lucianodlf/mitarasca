@@ -2,8 +2,6 @@ Mitarasca es un monorepo Bun de una app local de finanzas personales (un solo us
 
 ![Componentes de MiTarasca: la web llama a la API por tRPC; la API, la CLI y el MCP usan core, que lee y escribe un único archivo SQLite](img/architecture.png)
 
-<!-- OWNER: exportar de nuevo docs/img/architecture.png desde docs/architecture.html (se corrigieron título, grafía, comandos de la CLI y orden de la base). -->
-
 ## 1. Capas y componentes
 
 **Cliente (navegador)**
