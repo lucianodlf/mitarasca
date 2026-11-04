@@ -60,8 +60,8 @@ Abrir Settings, pestaña Developer, Edit Config. El archivo es
 ```
 
 Claude Desktop no hereda el PATH de la terminal: `command` es la ruta absoluta de Bun
-(`which bun`) y el primer arg es la ruta absoluta al `index.ts` de la CLI en tu clon
-(`readlink -f ~/.local/bin/mitarasca`). Sacar `"--demo"` para usar tu base.
+(`which bun`) y el primer arg es la ruta absoluta al `index.ts` de la CLI en la carpeta de
+instalación (`readlink -f ~/.local/bin/mitarasca`). Sacar `"--demo"` para usar tu base.
 
 Cerrar Claude Desktop del todo y volver a abrirlo. Los logs están en
 `~/.config/Claude/logs/mcp*.log` (Linux), `~/Library/Logs/Claude/mcp*.log` (macOS) o

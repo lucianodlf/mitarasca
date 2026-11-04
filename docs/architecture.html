@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mitarasca Architecture Diagram</title>
+  <title>Diagrama de arquitectura de MiTarasca</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" integrity="sha384-en/ztfPSRkGfME4KIm05joYXynqzUgbsG5nMrj/xEFAHXkeZfO3yMK8QQ+mP7p1/" crossorigin="anonymous"></script>
@@ -186,7 +186,7 @@
     <div class="header">
       <div class="header-row">
         <div class="pulse-dot"></div>
-        <h1>Mitarasca Architecture</h1>
+        <h1>Arquitectura de MiTarasca</h1>
         <div class="toolbar">
           <div class="toolbar-actions">
             <button onclick="copyAsImage(this)">📋 Copy</button>
@@ -196,7 +196,7 @@
           <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export options" aria-label="Export options">⋯</button>
         </div>
       </div>
-      <p class="subtitle">Monorepo Bun de finanzas personales, local y de un solo usuario. tRPC conecta la SPA con la API; CLI y MCP usan el core directamente.</p>
+      <p class="subtitle">Monorepo Bun local y de un solo usuario. tRPC conecta web con api; cli y mcp usan core directo.</p>
     </div>
 
     <!-- Main Diagram -->
@@ -219,10 +219,10 @@
         <text x="32" y="94" fill="#22d3ee" font-size="10" font-weight="600">Navegador</text>
 
         <rect x="360" y="76" width="290" height="370" rx="12" fill="rgba(52, 211, 153, 0.04)" stroke="#34d399" stroke-width="1" stroke-dasharray="8,4"/>
-        <text x="372" y="94" fill="#34d399" font-size="10" font-weight="600">packages/api · Bun.serve :3787</text>
+        <text x="372" y="94" fill="#34d399" font-size="10" font-weight="600">packages/api</text>
 
         <rect x="690" y="76" width="300" height="206" rx="12" fill="rgba(52, 211, 153, 0.04)" stroke="#34d399" stroke-width="1" stroke-dasharray="8,4"/>
-        <text x="702" y="94" fill="#34d399" font-size="10" font-weight="600">Consumidores in-process</text>
+        <text x="702" y="94" fill="#34d399" font-size="10" font-weight="600">In-process</text>
 
         <!-- ============ ARROWS (behind boxes) ============ -->
         <!-- Usuario -> web -->
@@ -233,7 +233,7 @@
         <text x="322" y="214" fill="#94a3b8" font-size="9" text-anchor="middle">fallback SPA</text>
         <!-- web -> /trpc -->
         <line x1="247" y1="295" x2="378" y2="295" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowhead)"/>
-        <text x="313" y="287" fill="#22d3ee" font-size="9" text-anchor="middle">tRPC · HTTP batch</text>
+        <text x="313" y="287" fill="#22d3ee" font-size="9" text-anchor="middle">tRPC · batch</text>
         <text x="313" y="311" fill="#94a3b8" font-size="8" text-anchor="middle">dev: proxy :5173</text>
         <!-- Hono -> routes -->
         <line x1="439" y1="150" x2="439" y2="174" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrowhead)"/>
@@ -287,10 +287,8 @@
         <rect x="35" y="110" width="230" height="240" rx="8" fill="#0f172a"/>
         <rect x="35" y="110" width="230" height="240" rx="8" fill="rgba(8, 51, 68, 0.4)" stroke="#22d3ee" stroke-width="1.5"/>
         <text x="150" y="132" fill="white" font-size="12" font-weight="600" text-anchor="middle">packages/web</text>
-        <text x="150" y="150" fill="#94a3b8" font-size="9" text-anchor="middle">Vue 3 · Vite 6 · PWA</text>
-        <text x="150" y="164" fill="#94a3b8" font-size="9" text-anchor="middle">vue-router · Pinia</text>
-        <text x="150" y="178" fill="#94a3b8" font-size="9" text-anchor="middle">Tailwind v4 · shadcn-vue</text>
-        <text x="150" y="192" fill="#94a3b8" font-size="9" text-anchor="middle">vue-table · vue-sonner</text>
+        <text x="150" y="150" fill="#94a3b8" font-size="9" text-anchor="middle">Vue 3 · Vite · PWA</text>
+        <text x="150" y="164" fill="#94a3b8" font-size="9" text-anchor="middle">Pinia · Tailwind · shadcn-vue</text>
 
         <rect x="55" y="206" width="190" height="26" rx="4" fill="rgba(8, 51, 68, 0.6)" stroke="#22d3ee" stroke-width="1"/>
         <text x="150" y="223" fill="white" font-size="9" text-anchor="middle">views/*View.vue</text>
@@ -300,18 +298,17 @@
         <line x1="150" y1="272" x2="150" y2="284" stroke="#22d3ee" stroke-width="1" marker-end="url(#arrowhead)"/>
         <rect x="55" y="286" width="190" height="26" rx="4" fill="rgba(8, 51, 68, 0.6)" stroke="#22d3ee" stroke-width="1"/>
         <text x="150" y="303" fill="white" font-size="9" text-anchor="middle">lib/trpc.ts · createTRPCClient</text>
-        <text x="150" y="334" fill="#22d3ee" font-size="8" text-anchor="middle">components/&lt;dominio&gt;: presentación</text>
 
         <!-- ============ API (backend) ============ -->
         <rect x="380" y="106" width="250" height="44" rx="6" fill="#0f172a"/>
         <rect x="380" y="106" width="250" height="44" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
         <text x="505" y="125" fill="white" font-size="11" font-weight="600" text-anchor="middle">Hono 4</text>
-        <text x="505" y="140" fill="#94a3b8" font-size="9" text-anchor="middle">Bun.serve · API_PORT 3787</text>
+        <text x="505" y="140" fill="#94a3b8" font-size="9" text-anchor="middle">Bun.serve · :3787</text>
 
         <rect x="380" y="176" width="118" height="44" rx="6" fill="#0f172a"/>
         <rect x="380" y="176" width="118" height="44" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
         <text x="439" y="194" fill="white" font-size="11" font-weight="600" text-anchor="middle">/*</text>
-        <text x="439" y="209" fill="#94a3b8" font-size="9" text-anchor="middle">web/dist estático</text>
+        <text x="439" y="209" fill="#94a3b8" font-size="9" text-anchor="middle">web/dist</text>
 
         <rect x="512" y="176" width="118" height="44" rx="6" fill="#0f172a"/>
         <rect x="512" y="176" width="118" height="44" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
@@ -321,62 +318,55 @@
         <rect x="380" y="250" width="250" height="90" rx="6" fill="#0f172a"/>
         <rect x="380" y="250" width="250" height="90" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
         <text x="505" y="270" fill="white" font-size="11" font-weight="600" text-anchor="middle">/trpc/* · appRouter</text>
-        <text x="505" y="287" fill="#94a3b8" font-size="9" text-anchor="middle">@hono/trpc-server · tRPC v11 · Zod 4</text>
+        <text x="505" y="287" fill="#94a3b8" font-size="9" text-anchor="middle">tRPC v11 · Zod</text>
         <text x="505" y="301" fill="#94a3b8" font-size="9" text-anchor="middle">movements · tags · balance</text>
         <text x="505" y="315" fill="#94a3b8" font-size="9" text-anchor="middle">debts · templates · dedup</text>
-        <text x="505" y="330" fill="#34d399" font-size="8" text-anchor="middle">~41 procedures · publicProcedure</text>
 
         <rect x="380" y="378" width="250" height="46" rx="6" fill="#0f172a"/>
         <rect x="380" y="378" width="250" height="46" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
         <text x="505" y="397" fill="white" font-size="11" font-weight="600" text-anchor="middle">context.ts</text>
-        <text x="505" y="413" fill="#94a3b8" font-size="9" text-anchor="middle">repos por request sobre getDb()</text>
+        <text x="505" y="413" fill="#94a3b8" font-size="9" text-anchor="middle">repos por request</text>
 
         <!-- ============ CLI / MCP ============ -->
         <rect x="700" y="106" width="135" height="144" rx="6" fill="#0f172a"/>
         <rect x="700" y="106" width="135" height="144" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
         <text x="767" y="128" fill="white" font-size="11" font-weight="600" text-anchor="middle">packages/cli</text>
-        <text x="767" y="147" fill="#94a3b8" font-size="9" text-anchor="middle">commander 15</text>
+        <text x="767" y="147" fill="#94a3b8" font-size="9" text-anchor="middle">commander</text>
         <text x="767" y="161" fill="#94a3b8" font-size="9" text-anchor="middle">bin: mitarasca</text>
-        <text x="767" y="175" fill="#94a3b8" font-size="9" text-anchor="middle">install · serve</text>
-        <text x="767" y="189" fill="#94a3b8" font-size="9" text-anchor="middle">lectura y escritura</text>
+        <text x="767" y="175" fill="#94a3b8" font-size="9" text-anchor="middle">init · ui · serve · mcp</text>
         <text x="767" y="232" fill="#34d399" font-size="8" text-anchor="middle">mismo proceso</text>
 
         <rect x="845" y="106" width="135" height="144" rx="6" fill="#0f172a"/>
         <rect x="845" y="106" width="135" height="144" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
         <text x="912" y="128" fill="white" font-size="11" font-weight="600" text-anchor="middle">packages/mcp</text>
-        <text x="912" y="147" fill="#94a3b8" font-size="9" text-anchor="middle">MCP SDK · stdio</text>
-        <text x="912" y="161" fill="#94a3b8" font-size="9" text-anchor="middle">McpServer</text>
-        <text x="912" y="175" fill="#94a3b8" font-size="9" text-anchor="middle">18 tools</text>
-        <text x="912" y="189" fill="#94a3b8" font-size="9" text-anchor="middle">registerTool + zod</text>
+        <text x="912" y="147" fill="#94a3b8" font-size="9" text-anchor="middle">SDK · stdio</text>
+        <text x="912" y="161" fill="#94a3b8" font-size="9" text-anchor="middle">18 tools</text>
         <text x="912" y="232" fill="#34d399" font-size="8" text-anchor="middle">mismo proceso</text>
 
         <!-- ============ CORE ============ -->
         <rect x="40" y="490" width="940" height="100" rx="8" fill="#0f172a"/>
         <rect x="40" y="490" width="940" height="100" rx="8" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
         <text x="510" y="514" fill="white" font-size="12" font-weight="600" text-anchor="middle">packages/core</text>
-        <text x="510" y="532" fill="#94a3b8" font-size="9" text-anchor="middle">dominio + acceso a datos · sin HTTP · único barrel público: src/index.ts</text>
-        <text x="510" y="548" fill="#94a3b8" font-size="9" text-anchor="middle">movements · tags · balance · debts + installments · templates · presets</text>
-        <text x="510" y="562" fill="#94a3b8" font-size="9" text-anchor="middle">dedup · invisibles · images/hash · report · config</text>
-        <text x="510" y="579" fill="#34d399" font-size="8" text-anchor="middle">*.repository.ts (make*Repo(db)) + *.singleton.ts (funciones ligadas al db global)</text>
+        <text x="510" y="532" fill="#94a3b8" font-size="9" text-anchor="middle">dominio + datos · sin HTTP</text>
+        <text x="510" y="548" fill="#94a3b8" font-size="9" text-anchor="middle">movements · tags · balance · debts · templates · presets</text>
+        <text x="510" y="562" fill="#94a3b8" font-size="9" text-anchor="middle">dedup · invisibles · report · config</text>
 
         <!-- ============ PERSISTENCIA / CONFIG ============ -->
         <rect x="40" y="630" width="260" height="64" rx="6" fill="#0f172a"/>
         <rect x="40" y="630" width="260" height="64" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
         <text x="170" y="652" fill="white" font-size="11" font-weight="600" text-anchor="middle">drizzle/ migraciones</text>
-        <text x="170" y="669" fill="#94a3b8" font-size="9" text-anchor="middle">esquema: src/db/schema.ts</text>
-        <text x="170" y="683" fill="#a78bfa" font-size="8" text-anchor="middle">ensureDb(): bootstrap + seed</text>
+        <text x="170" y="672" fill="#a78bfa" font-size="8" text-anchor="middle">ensureDb() (init): bootstrap + seed</text>
 
         <rect x="360" y="630" width="300" height="64" rx="6" fill="#0f172a"/>
         <rect x="360" y="630" width="300" height="64" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
         <text x="510" y="652" fill="white" font-size="11" font-weight="600" text-anchor="middle">SQLite</text>
         <text x="510" y="669" fill="#94a3b8" font-size="9" text-anchor="middle">bun:sqlite · Drizzle ORM</text>
-        <text x="510" y="683" fill="#a78bfa" font-size="8" text-anchor="middle">una DB compartida por api, cli y mcp</text>
+        <text x="510" y="683" fill="#a78bfa" font-size="8" text-anchor="middle">una DB compartida</text>
 
         <rect x="720" y="630" width="260" height="64" rx="6" fill="#0f172a"/>
         <rect x="720" y="630" width="260" height="64" rx="6" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="1.5"/>
-        <text x="850" y="652" fill="white" font-size="11" font-weight="600" text-anchor="middle">.mitarasca/config.toml</text>
-        <text x="850" y="669" fill="#94a3b8" font-size="9" text-anchor="middle">DB_PATH › toml › XDG › data/</text>
-        <text x="850" y="683" fill="#94a3b8" font-size="8" text-anchor="middle">inbox · imports · processed · backups</text>
+        <text x="850" y="652" fill="white" font-size="11" font-weight="600" text-anchor="middle">config.toml (global + proyecto)</text>
+        <text x="850" y="669" fill="#94a3b8" font-size="9" text-anchor="middle">DB_PATH › demo › config › data/</text>
 
         <!-- ============ LEGEND ============ -->
         <text x="30" y="402" fill="white" font-size="10" font-weight="600">Leyenda</text>
@@ -397,49 +387,9 @@
       </svg>
     </div>
 
-    <!-- Info Cards -->
-    <div class="cards">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-dot cyan"></div>
-          <h3>Comunicación tRPC</h3>
-        </div>
-        <ul>
-          <li>• Contrato: import type AppRouter desde @mitarasca/api/router, sin arrastrar bun:sqlite al bundle</li>
-          <li>• Cliente: httpBatchLink({ url: "/trpc" }) en packages/web/src/lib/trpc.ts</li>
-          <li>• Dev: Vite :5173 hace proxy de /trpc a :3787 (sin CORS)</li>
-          <li>• Prod: mismo origen, Hono sirve web/dist</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-dot violet"></div>
-          <h3>Persistencia y configuración</h3>
-        </div>
-        <ul>
-          <li>• Drizzle + bun:sqlite; migraciones en packages/core/drizzle/</li>
-          <li>• resolveDbPath: DB_PATH, config.toml, XDG (MITARASCA_INSTALLED=1), data/mitarasca.db</li>
-          <li>• api, cli y mcp apuntan a la misma DB vía .mitarasca/config.toml</li>
-          <li>• Repos testeables con SQLite :memory:</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-dot amber"></div>
-          <h3>Alcance y notas</h3>
-        </div>
-        <ul>
-          <li>• Sin servicios cloud, auth ni APIs de terceros; publicProcedure sin autenticación</li>
-          <li>• strip-undefined.ts limpia los undefined de Zod por exactOptionalPropertyTypes</li>
-          <li>• Release: scripts/build-release.ts genera dist-release/ (nombre del paquete publicado sin verificar)</li>        </ul>
-      </div>
-    </div>
-
     <!-- Footer -->
     <p class="footer">
-      Mitarasca • Bun workspaces • TypeScript 5.7 • Biome • generado el 2026-10-09
+      MiTarasca · Bun · TypeScript
     </p>
   </div>
 

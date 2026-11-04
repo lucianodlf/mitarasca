@@ -1,5 +1,13 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runUninstall } from "./uninstall.js";
@@ -54,5 +62,18 @@ describe("runUninstall", () => {
     });
     expect(r.linkRemoved).toBe(false);
     expect(r.leftovers).toContain(join(tmp, ".config", "mitarasca"));
+  });
+
+  test("avisa de la línea de PATH en el rc sin modificarlo", () => {
+    const rc = join(tmp, ".bashrc");
+    const body = 'export PATH="$HOME/.local/bin:$PATH" # mitarasca\n';
+    writeFileSync(rc, body);
+    writeFileSync(join(tmp, ".zshrc"), "export FOO=1\n");
+    const r = runUninstall({
+      binPath: join(tmp, ".local", "bin", "mitarasca"),
+      cliEntry: join(tmp, "entry.ts"),
+    });
+    expect(r.rcFiles).toEqual([rc]);
+    expect(readFileSync(rc, "utf8")).toBe(body);
   });
 });

@@ -1,9 +1,15 @@
-import { existsSync, lstatSync, realpathSync, unlinkSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, realpathSync, unlinkSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { loadConfig, resolveConfigPath, resolveDbPath, resolveDemoDbPath } from "@mitarasca/core";
 
-export type UninstallResult = { linkRemoved: boolean; linkMsg: string; leftovers: string[] };
+export type UninstallResult = {
+  linkRemoved: boolean;
+  linkMsg: string;
+  leftovers: string[];
+  /** Archivos rc con la línea de PATH que agrega install.sh (marca `# mitarasca`). */
+  rcFiles: string[];
+};
 
 /**
  * Borra `binPath` solo si es un symlink que apunta a `cliEntry` (este clon) y lista los datos
@@ -43,5 +49,9 @@ export function runUninstall(opts: { binPath: string; cliEntry: string }): Unins
   const existing = [...new Set(candidates)].filter((p) => existsSync(p));
   // Si una ruta ya está dentro de otra listada, sobra.
   const leftovers = existing.filter((p) => !existing.some((q) => q !== p && p.startsWith(`${q}/`)));
-  return { linkRemoved, linkMsg, leftovers };
+  // Solo se avisa: los dotfiles del usuario no se tocan.
+  const rcFiles = [".bashrc", ".zshrc", ".profile"]
+    .map((f) => join(home, f))
+    .filter((f) => existsSync(f) && /# mitarasca$/m.test(readFileSync(f, "utf8")));
+  return { linkRemoved, linkMsg, leftovers, rcFiles };
 }

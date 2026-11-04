@@ -1,19 +1,21 @@
 # Features
 
-Qué hace MiTarasca hoy, para qué sirve cada parte y qué limitaciones tiene.
+Qué hace MiTarasca hoy.
 
 Niveles de madurez usados acá:
 
-- **Estable**: probado contra la base de demo, sin bugs conocidos que rompan el uso.
-- **Experimental**: funciona, pero con bugs conocidos o limitaciones. Usar con cuidado.
+- **Estable**: probado en uso personal, sin bugs conocidos
+- **Experimental**: funciona, tambien lo uso pero con bugs conocidos, limitacioens o mejoras pendientes
+
+>cm Callout: siempre podes hacer un backup manual copiando la mitarasca.db antes de probar y listo!
 
 ## Movimientos
 
 **Objetivo**: registrar ingresos y egresos con el contexto suficiente para entender a dónde
-se va la plata.
+se va la plata y de donde vino
 
 - Cada movimiento tiene fecha, dirección (ingreso o egreso), monto, detalle y observación.
-- Alta, edición y borrado desde la web, el CLI (`movimiento add|update|delete`) y el MCP.
+- CRUD desde la web, el CLI (`movimiento add|update|delete`) y el MCP.
 - Listado por mes con filtros por tipo, concepto, persona, estado y texto (web), o por mes y
   dirección (CLI `movimientos`, MCP `listar_movimientos`).
 
@@ -79,7 +81,8 @@ contabilidad aparte.
   cada persona, por importe o por porcentaje.
 - Totales por medio de pago y por persona, y proyección de cuotas por mes.
 
-Estable desde la web y el MCP. Limitaciones del CLI:
+Estable desde la web, y en el MCP salvo `borrar_deuda` y `pagar_cuota`, que son
+experimentales (ver [MCP](#mcp)). Limitaciones del CLI:
 - `deuda crear` y `deuda editar` reciben IDs numéricos de tags.
 - `cuota pagar` y `cuota editar` son experimentales: ningún comando lista las cuotas ni sus
   IDs.
@@ -113,18 +116,19 @@ egresos, ingresos, balance, deudas y tags. Se comunica con la API por tRPC.
 herramientas.
 
 - Comandos estables: `movimientos`, `ultimo-movimiento`, `balance`, `informe`, `deudas`,
-  `movimiento add|update|delete|import`, `deuda crear|editar` y `config get|set|path`.
+  `movimiento add|update|delete|import`, `deuda crear|editar`, `config get|set|path`, `ui`,
+  `demo`, `mcp` y `uninstall`.
 - Salida `--json` en las consultas.
 - Desde el repo se usa con `bun run --cwd packages/cli dev -- <comando>`.
 
 Experimentales: `duplicados`, `imagenes-nuevas`, `deuda borrar`, `deuda compartir`,
-`cuota pagar|editar`, `serve` y `ui`.
+`cuota pagar|editar` y `serve`.
 
 Instalación y uso: [`docs/guias/cli.md`](./guias/cli.md).
 
 Limitaciones:
 - Los errores de validación muestran el stack completo además del mensaje.
-- No está publicado en npm: se usa desde un clon del repo.
+- No está publicado en npm: se instala con `scripts/install.sh`.
 
 ## MCP
 
@@ -138,8 +142,8 @@ Limitaciones:
 Configuración para Claude Code y Claude Desktop: [`docs/guias/mcp.md`](./guias/mcp.md).
 
 Experimental como integración:
-- Hay que configurarlo a mano en el cliente MCP, apuntando a
-  `bun <ruta-del-repo>/packages/mcp/src/index.ts`.
+- Hay que configurarlo a mano en cada cliente MCP, con los pasos de la
+  [guía del MCP](./guias/mcp.md).
 - `importar_movimientos`, `borrar_deuda` y `pagar_cuota` tienen bugs conocidos. Sin
   `tags`, `pagar_cuota` falla; con `tags: {}` funciona.
 - No hay tools de tags.
@@ -160,7 +164,7 @@ Guía de instalación y uso: [`docs/guias/importar-movimientos.md`](./guias/impo
 
 Requisitos:
 - Un agente con visión que cargue skills de Claude Code (probada con Claude Code).
-- La CLI `mitarasca` en el PATH. Desde un clon, sin instalarla:
+- La CLI `mitarasca` en el PATH. Desde la carpeta donde clonaste el repo, sin instalarla:
   `alias mitarasca="bun <ruta-del-repo>/packages/cli/src/index.ts"`.
 - Los conceptos que usa la skill creados como tags (ver abajo).
 

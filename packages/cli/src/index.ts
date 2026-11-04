@@ -1519,16 +1519,23 @@ program
   .command("uninstall")
   .description("Quita el comando mitarasca del PATH; no borra datos, muestra dónde quedan")
   .action(() => {
-    const { linkMsg, leftovers } = runUninstall({
+    const { linkMsg, leftovers, rcFiles } = runUninstall({
       binPath: resolve(homedir(), ".local/bin/mitarasca"),
       cliEntry: new URL(import.meta.url).pathname,
     });
     console.log(linkMsg);
-    if (leftovers.length === 0) return;
-    console.log("\nQuedan estos datos y configs (no se borraron):");
-    for (const p of leftovers) console.log(`  ${p}`);
-    console.log("\nPara borrarlos:");
-    for (const p of leftovers) console.log(`  rm -rf ${JSON.stringify(p)}`);
+    if (leftovers.length > 0) {
+      console.log("\nQuedan estos datos y configs (no se borraron):");
+      for (const p of leftovers) console.log(`  ${p}`);
+      console.log("\nPara borrarlos:");
+      for (const p of leftovers) console.log(`  rm -rf ${JSON.stringify(p)}`);
+    }
+    if (rcFiles.length > 0) {
+      console.log("\nEl instalador agregó una línea de PATH (termina en `# mitarasca`) a:");
+      for (const f of rcFiles) console.log(`  ${f}`);
+      console.log("\nSi ya no la querés, borrala vos (no se tocó):");
+      for (const f of rcFiles) console.log(`  sed -i '/# mitarasca$/d' ${JSON.stringify(f)}`);
+    }
   });
 
 program

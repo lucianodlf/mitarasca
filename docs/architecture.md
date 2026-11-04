@@ -1,5 +1,9 @@
 Mitarasca es un monorepo Bun de una app local de finanzas personales (un solo usuario, sin servicios cloud). El eje de comunicación es tRPC entre la SPA `web` y `api`; `cli` y `mcp` no usan tRPC.
 
+![Componentes de MiTarasca: la web llama a la API por tRPC; la API, la CLI y el MCP usan core, que lee y escribe un único archivo SQLite](img/architecture.png)
+
+<!-- OWNER: exportar de nuevo docs/img/architecture.png desde docs/architecture.html (se corrigieron título, grafía, comandos de la CLI y orden de la base). -->
+
 ## 1. Capas y componentes
 
 **Cliente (navegador)**
@@ -16,7 +20,7 @@ Mitarasca es un monorepo Bun de una app local de finanzas personales (un solo us
 **Dominio y persistencia**
 - `packages/core`: lógica de negocio y acceso a datos, sin HTTP.
   - Módulos: `movements`, `tags`, `balance`, `debts` (+ `installments`), `templates`, `presets`, `dedup`, `invisibles`, `images/hash`, `report`, `config`.
-  - Cada módulo tiene `*.repository.ts` (factory `make*Repo(db)`) y `*.singleton.ts` (funciones ligadas al `db` global).
+  - Los módulos con datos tienen `*.repository.ts` (factory `make*Repo(db)`) y, salvo `presets`, `*.singleton.ts` (funciones ligadas al `db` global). `images/hash` y `config` son utilidades sin repo.
   - `src/index.ts` es el único barrel público.
   - Persistencia: Drizzle ORM sobre SQLite (`bun:sqlite`). Esquema en `src/db/schema.ts` y migraciones en `drizzle/`. `ensureDb()` hace bootstrap y seed.
 
@@ -51,22 +55,51 @@ Mitarasca es un monorepo Bun de una app local de finanzas personales (un solo us
 1. Navegador → Vue View → composable → cliente tRPC → `POST/GET /trpc` (proxy Vite en dev) → Hono → `trpcServer` → router de dominio → repo del core → Drizzle → SQLite.
 2. `cli` → `@mitarasca/core` (llamada directa) → SQLite.
 3. `mcp` (stdio, agente LLM) → `@mitarasca/core` (llamada directa) → SQLite.
-4. `mitarasca serve` (CLI) → `ensureDb()` → importa `@mitarasca/api` y lo levanta con `Bun.serve`, sirviendo también `web-dist`.
+4. `mitarasca serve`, `ui` o `demo` (CLI) → `assertDbExists()` (no crea la base; falla si no existe) → importa `@mitarasca/api` y lo levanta con `Bun.serve`, sirviendo también `packages/web/dist` (`web-dist` en el bundle de release).
 5. Los tres puntos de entrada (`api`, `cli`, `mcp`) comparten la misma DB.
+
+El flujo 1, paso a paso:
+
+```mermaid
+sequenceDiagram
+    participant V as View (Vue)
+    participant C as composable
+    participant T as cliente tRPC
+    participant P as proxy Vite :5173
+    participant H as Hono /trpc/*
+    participant R as router de dominio
+    participant Repo as repo del core
+    participant DB as SQLite
+    V->>C: acción del usuario
+    C->>T: query o mutation
+    T->>P: GET/POST /trpc (batch)
+    Note over P: solo en dev, en producción el navegador llama directo a :3787
+    P->>H: http://localhost:3787/trpc
+    H->>R: trpcServer, context.ts arma los repos del request
+    R->>Repo: llama al repo (tags: funciones singleton)
+    Repo->>DB: Drizzle
+    DB-->>Repo: filas
+    Repo-->>R: resultado
+    R-->>H: resultado
+    H-->>T: respuesta del batch
+    T-->>C: datos tipados
+```
 
 ## 4. Configuración y datos locales
 
-- **Ruta de la DB (`resolveDbPath`), en orden:**
-  1. `DB_PATH`.
-  2. `db_path` de `.mitarasca/config.toml`.
-  3. Directorio XDG (`~/.local/share/mitarasca/`) si `MITARASCA_INSTALLED=1`.
-  4. `<repo>/data/mitarasca.db`.
+- **Ruta de la DB (`resolveDbPath` en `packages/core/src/db/client.ts`), en orden; gana el primer paso que aplica:**
+  1. `DB_PATH`, si está seteado. Usar una ruta absoluta.
+  2. `MITARASCA_DEMO=1` (lo activa `--demo`): `data/demo.db` dentro de la carpeta del repo.
+  3. `db_path` de la config (`loadConfig` en `packages/core/src/config.ts`). Se lee la config global (`~/.config/mitarasca/config.toml`, o `$XDG_CONFIG_HOME/mitarasca/config.toml`) y encima la del proyecto: el `.mitarasca/config.toml` más cercano subiendo desde el directorio actual. Si las dos tienen `db_path`, gana la del proyecto. Una ruta relativa se resuelve desde la carpeta que contiene `.mitarasca/` (o desde el directorio actual si no hay ninguna). El repo trae un `.mitarasca/config.toml` que apunta a `./data/mitarasca.db`.
+  4. `data/mitarasca.db` dentro de la carpeta del repo. Con el instalador por `curl` (`scripts/install.sh`, que clona en `~/.local/share/mitarasca/`) es; si se corre desde un repo clonado a mano, es el `data/` de esa carpeta. Con `curl`: `~/.local/share/mitarasca/data/mitarasca.db`.
+
+  Nota sobre el bundle de release: `scripts/build-release.ts` define `MITARASCA_INSTALLED=1`. Con esa variable, la demo pasa a `$XDG_DATA_HOME/mitarasca/demo.db` y, entre los pasos 3 y 4, se usa `$XDG_DATA_HOME/mitarasca/mitarasca.db` (por defecto `~/.local/share/mitarasca/`). Hoy ese bundle no se distribuye y el instalador no define la variable.
 - **Directorios en `config.toml` `[paths]`:** `inbox`, `imports`, `processed` y `backups`.
 - **Release (`scripts/build-release.ts`):**
   - Vite build de la web.
   - `Bun.build` del CLI como entrypoint único.
   - Copia de `drizzle/`, `web-dist` y `assets` de skill a `dist-release/`.
-  - Publicación como paquete `@lucianodlf/mitarasca` (nombre sin verificar completo; se cortó la lectura del script).
+  - Escribe `dist-release/package.json` con el nombre `@lucianodlf/mitarasca`. No publica: todavía no hay paquete en npm.
 
 ## 5. Tecnologías
 

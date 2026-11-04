@@ -7,6 +7,7 @@
 # Variables: MITARASCA_DIR (dónde clonar), MITARASCA_REPO (URL a clonar), MITARASCA_YES=1
 # (instala Bun sin preguntar).
 set -euo pipefail
+ORIG_PATH="$PATH" # el PATH de la terminal del usuario, antes de que el script lo toque
 
 REPO_URL="${MITARASCA_REPO:-https://github.com/lucianodlf/mitarasca.git}"
 BIN_DIR="$HOME/.local/bin"
@@ -97,16 +98,25 @@ ln -sf "$DIR/packages/cli/src/index.ts" "$BIN_DIR/mitarasca"
 say ""
 say "Listo: $BIN_DIR/mitarasca -> $DIR/packages/cli/src/index.ts"
 
-case ":$PATH:" in
-  *":$BIN_DIR:"*) ;;
-  *)
-    say ""
-    say "$BIN_DIR no está en tu PATH. Agregá esta línea a ~/.bashrc o ~/.zshrc:"
-    say "  export PATH=\"\$HOME/.local/bin:\$PATH\""
-    ;;
+# 5. PATH persistente: un script no puede cambiar el PATH de la terminal que lo lanzó,
+# así que lo dejamos en el rc del shell (terminales nuevas) y avisamos cómo refrescar esta.
+case "$(basename "${SHELL:-sh}")" in
+  zsh) RC="$HOME/.zshrc" ;;
+  bash) RC="$HOME/.bashrc" ;;
+  *) RC="$HOME/.profile" ;;
 esac
-if [ -x "$HOME/.bun/bin/bun" ] && ! command -v bun >/dev/null 2>&1; then
-  say "Abrí una terminal nueva para que bun quede en el PATH."
+PATH_LINE='export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH" # mitarasca'
+if ! grep -qF '# mitarasca' "$RC" 2>/dev/null; then
+  printf '\n%s\n' "$PATH_LINE" >> "$RC"
+  say "Agregué el PATH (bun y $BIN_DIR) a $RC."
+fi
+NEED_REFRESH=1
+if [[ ":$ORIG_PATH:" == *":$BIN_DIR:"* ]] && PATH="$ORIG_PATH" command -v bun >/dev/null 2>&1; then
+  NEED_REFRESH=0
+fi
+if [ "$NEED_REFRESH" = "1" ]; then
+  say "Para usar mitarasca en esta terminal ahora mismo, corré:"
+  say "  . \"$RC\""
 fi
 
 say ""

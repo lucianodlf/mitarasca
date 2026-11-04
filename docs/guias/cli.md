@@ -4,14 +4,14 @@ La CLI `mitarasca` consulta y carga datos desde la terminal, en el mismo proceso
 dominio y sin servidor.
 
 Madurez: **estable** para las consultas, `movimiento add|update|delete|import`,
-`deuda crear|editar` y `config`. **Experimental** para `duplicados`, `imagenes-nuevas`,
-`deuda borrar`, `deuda compartir`, `cuota pagar|editar`, `serve`, `ui`, `demo`, `mcp` y
-`uninstall`. Detalle en
+`deuda crear|editar`, `config`, `ui`, `demo`, `mcp` y `uninstall`. **Experimental** para
+`duplicados`, `imagenes-nuevas`, `deuda borrar`, `deuda compartir`, `cuota pagar|editar` y
+`serve`. Detalle en
 [`docs/features.md`](../features.md#cli).
 
 ## Instalación
 
-Solo Linux, desde un clon del repo (el paquete no está en npm todavía):
+Solo Linux, clonando el repo o con `curl` (el paquete no está en npm todavía):
 
 ```bash
 git clone https://github.com/lucianodlf/mitarasca.git
@@ -25,7 +25,7 @@ O sin clonar a mano: `curl -fsSL https://raw.githubusercontent.com/lucianodlf/mi
 buildea la web, crea la base con `mitarasca init` y deja el symlink `~/.local/bin/mitarasca`.
 Volver a correrlo actualiza; `mitarasca uninstall` quita el symlink sin borrar datos.
 
-Sin instalar, desde la raíz del clon: `bun packages/cli/src/index.ts --help`.
+Sin instalar, desde la carpeta donde clonaste el repo: `bun packages/cli/src/index.ts --help`.
 
 ## Base de datos y modo demo
 
@@ -38,14 +38,10 @@ mitarasca balance --demo    # cualquier comando sobre la demo; igual con MITARAS
 Solo `init` y `demo` crean archivos: si la base no existe, los demás comandos lo dicen y
 salen con error.
 
-La CLI resuelve la base en este orden:
-
-1. `DB_PATH`, si está seteado. Usar siempre una ruta absoluta.
-2. `--demo` o `MITARASCA_DEMO=1`: `data/demo.db` dentro del clon.
-3. `db_path` del `.mitarasca/config.toml` más cercano subiendo desde el directorio actual.
-   El del repo apunta a `./data/mitarasca.db`.
-4. `db_path` de la config global, `~/.config/mitarasca/config.toml`.
-5. Si no hay nada de lo anterior, `data/mitarasca.db` dentro del clon.
+La CLI elige la base con `DB_PATH`, `--demo`, el `db_path` de la config o, si no hay nada de
+eso, `data/mitarasca.db` dentro de la carpeta de instalación
+(`~/.local/share/mitarasca/data/mitarasca.db` con el instalador por `curl`). El orden completo está en
+[Arquitectura](../architecture.md), sección "Configuración y datos locales".
 
 Para usar otra base desde cualquier directorio:
 
